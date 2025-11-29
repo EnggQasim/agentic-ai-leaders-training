@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: physical-ai-api
+    runtime: python
+    region: oregon
+    plan: free
+    branch: master
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: QDRANT_USE_MEMORY
+        value: "true"
+      - key: CORS_ORIGINS
+        value: "http://localhost:3000,https://enggqasim.github.io"
+    healthCheckPath: /health

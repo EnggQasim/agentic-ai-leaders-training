@@ -17,10 +17,10 @@
 | US3: Mobile | 2 tasks (2 complete) |
 | US4: Dark Mode | 2 tasks (2 complete) |
 | Visual Assets | 17 tasks (11 icons complete, 6 diagrams pending) |
-| Polish Phase | 2 tasks (1 complete, 1 pending) |
+| Polish Phase | 2 tasks (2 complete) |
 | Parallel Opportunities | 28 tasks marked [P] |
-| **Completed** | **46 tasks** |
-| **Remaining** | **7 tasks** (6 AI diagrams + 1 deployment) |
+| **Completed** | **47 tasks** |
+| **Remaining** | **6 tasks** (AI diagrams - optional) |
 
 ## User Story Mapping
 
@@ -165,7 +165,7 @@
 > Cross-cutting concerns and final verification
 
 - [x] T041 Run `npm run build` and verify no broken links or build errors
-- [ ] T042 Deploy to GitHub Pages and verify site loads at published URL
+- [x] T042 Deploy to GitHub Pages and verify site loads at published URL (https://enggqasim.github.io/physical-ai-robotics-textbook/)
 
 ---
 
@@ -254,5 +254,5 @@ Before marking feature complete:
 - [x] Dark mode toggle works and persists
 - [ ] Lighthouse accessibility score 85+
 - [x] Build produces no errors
-- [ ] Site deployed to GitHub Pages
+- [x] Site deployed to GitHub Pages
 
