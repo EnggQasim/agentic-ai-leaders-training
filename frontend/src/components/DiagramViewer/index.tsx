@@ -6,6 +6,7 @@ interface DiagramViewerProps {
   title?: string;
   alt?: string;
   className?: string;
+  allowCustomPrompt?: boolean;
 }
 
 interface DiagramData {
@@ -25,27 +26,36 @@ export default function DiagramViewer({
   title,
   alt,
   className = '',
+  allowCustomPrompt = false,
 }: DiagramViewerProps): JSX.Element {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [showCustomPrompt, setShowCustomPrompt] = useState(false);
+  const [customPrompt, setCustomPrompt] = useState('');
 
-  const generateDiagram = useCallback(async () => {
+  const generateDiagram = useCallback(async (useCustom = false) => {
     setIsLoading(true);
     setError(null);
 
     try {
+      const requestBody: { concept: string; custom_prompt?: string; force_regenerate: boolean } = {
+        concept: useCustom && customPrompt ? 'custom' : concept,
+        force_regenerate: useCustom,
+      };
+
+      if (useCustom && customPrompt) {
+        requestBody.custom_prompt = customPrompt;
+      }
+
       const response = await fetch(`${API_URL}/api/diagram/generate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          concept,
-          force_regenerate: false,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
@@ -64,7 +74,14 @@ export default function DiagramViewer({
     } finally {
       setIsLoading(false);
     }
-  }, [concept]);
+  }, [concept, customPrompt]);
+
+  const handleCustomGenerate = () => {
+    if (customPrompt.trim()) {
+      generateDiagram(true);
+      setShowCustomPrompt(false);
+    }
+  };
 
   // Handle keyboard events for modal
   useEffect(() => {
@@ -137,19 +154,65 @@ export default function DiagramViewer({
 
   return (
     <div className={`${styles.diagramContainer} ${className}`}>
-      {!imageUrl && !isLoading && !error && (
-        <button
-          className={styles.generateButton}
-          onClick={generateDiagram}
-          aria-label={`Generate diagram for ${displayTitle}`}
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-            <circle cx="8.5" cy="8.5" r="1.5" />
-            <polyline points="21 15 16 10 5 21" />
-          </svg>
-          <span>Visualize: {displayTitle}</span>
-        </button>
+      {!imageUrl && !isLoading && !error && !showCustomPrompt && (
+        <div className={styles.buttonGroup}>
+          <button
+            className={styles.generateButton}
+            onClick={() => generateDiagram(false)}
+            aria-label={`Generate diagram for ${displayTitle}`}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <polyline points="21 15 16 10 5 21" />
+            </svg>
+            <span>Visualize: {displayTitle}</span>
+          </button>
+          {allowCustomPrompt && (
+            <button
+              className={styles.customPromptToggle}
+              onClick={() => setShowCustomPrompt(true)}
+              aria-label="Custom diagram request"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+              </svg>
+              Custom
+            </button>
+          )}
+        </div>
+      )}
+
+      {showCustomPrompt && (
+        <div className={styles.customPromptContainer}>
+          <label htmlFor="custom-prompt" className={styles.promptLabel}>
+            Describe the diagram you want:
+          </label>
+          <textarea
+            id="custom-prompt"
+            className={styles.promptInput}
+            value={customPrompt}
+            onChange={(e) => setCustomPrompt(e.target.value)}
+            placeholder="e.g., Create a diagram showing how ROS2 nodes communicate through topics with message serialization..."
+            rows={3}
+          />
+          <div className={styles.promptActions}>
+            <button
+              className={styles.cancelButton}
+              onClick={() => setShowCustomPrompt(false)}
+            >
+              Cancel
+            </button>
+            <button
+              className={styles.generateCustomButton}
+              onClick={handleCustomGenerate}
+              disabled={!customPrompt.trim()}
+            >
+              Generate Custom Diagram
+            </button>
+          </div>
+        </div>
       )}
 
       {isLoading && (

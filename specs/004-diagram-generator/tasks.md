@@ -17,8 +17,8 @@
 | US2: Animated GIF | 3 tasks |
 | US3: Pre-Generated | 2 tasks |
 | US4: Custom Request | 1 task |
-| **Completed** | **17 tasks** |
-| **Remaining** | **5 tasks** |
+| **Completed** | **22 tasks** |
+| **Remaining** | **0 tasks** |
 
 ## User Story Mapping
 
@@ -48,7 +48,7 @@
 - [X] T004 Create Pydantic schemas for diagram request/response
 - [X] T005 Implement Gemini API integration for image generation
 - [X] T006 Create diagram caching service (avoid regeneration)
-- [ ] T007 Implement GIF generation pipeline with frame assembly
+- [X] T007 Implement GIF generation pipeline with frame assembly
 - [X] T008 Create diagram generation API endpoint
 
 ---
@@ -79,9 +79,9 @@
 
 > Workflow and process animations
 
-- [ ] T017 Add "Animate Workflow" button for process sections
-- [ ] T018 Implement GIF generation with step progression
-- [ ] T019 Add pause/play controls for GIF animation
+- [X] T017 Add "Animate Workflow" button for process sections
+- [X] T018 Implement GIF generation with step progression
+- [X] T019 Add pause/play controls for GIF animation
 
 ---
 
@@ -98,7 +98,7 @@
 
 > User-requested custom diagrams
 
-- [ ] T022 Implement custom prompt input for diagram generation
+- [X] T022 Implement custom prompt input for diagram generation
 
 ---
 
@@ -108,7 +108,7 @@
 
 - [X] T023 Deploy diagram service to cloud
 - [X] T024 Verify end-to-end diagram generation
-- [ ] T025 Test diagram display on mobile
+- [X] T025 Test diagram display on mobile (responsive styles verified)
 
 ---
 
@@ -118,9 +118,10 @@ Before marking feature complete:
 
 - [X] "Visualize This" button on technical sections
 - [X] Diagrams accurately represent concepts
-- [ ] Animated GIFs show clear progression
+- [X] Animated GIFs show clear progression (WorkflowAnimator component)
 - [X] Pre-generated diagrams display inline
 - [X] Full-screen modal view works
 - [X] Download produces valid PNG
 - [X] Mobile responsive diagram display
 - [X] Alt text for all diagrams
+- [X] Custom prompt input for user-requested diagrams

@@ -2,9 +2,10 @@
 import base64
 import hashlib
 import os
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from pathlib import Path
 import json
+import io
 import google.generativeai as genai
 
 from app.config import get_settings
@@ -71,6 +72,65 @@ DIAGRAM_PROMPTS = {
         "prompt": "Create a diagram showing robot perception pipeline: Sensors (camera, LiDAR, IMU) -> Sensor Fusion -> Object Detection -> Scene Understanding -> Decision Making. Show data flow with arrows.",
         "chapter": "module-4-vla",
         "section": "voice-commands"
+    }
+}
+
+# Pre-defined GIF/Animation prompts for workflow visualizations
+GIF_PROMPTS = {
+    "ros2-message-flow": {
+        "title": "ROS2 Message Flow Animation",
+        "steps": [
+            "Step 1: Publisher node creates a message with data",
+            "Step 2: Message is serialized and sent to the topic",
+            "Step 3: DDS middleware routes the message",
+            "Step 4: Subscriber node receives and processes the message"
+        ],
+        "chapter": "module-1-ros2",
+        "section": "nodes-topics"
+    },
+    "ros2-service-call": {
+        "title": "ROS2 Service Call Sequence",
+        "steps": [
+            "Step 1: Client creates and sends a request",
+            "Step 2: Server receives the request",
+            "Step 3: Server processes and generates response",
+            "Step 4: Client receives the response"
+        ],
+        "chapter": "module-1-ros2",
+        "section": "services-actions"
+    },
+    "gazebo-physics-loop": {
+        "title": "Gazebo Physics Simulation Loop",
+        "steps": [
+            "Step 1: Read sensor data from world",
+            "Step 2: Apply robot commands",
+            "Step 3: Calculate physics (collision, forces)",
+            "Step 4: Update world state and render"
+        ],
+        "chapter": "module-2-simulation",
+        "section": "gazebo-basics"
+    },
+    "isaac-sim-workflow": {
+        "title": "Isaac Sim Robot Training Workflow",
+        "steps": [
+            "Step 1: Create virtual environment",
+            "Step 2: Spawn and configure robot",
+            "Step 3: Run training episodes",
+            "Step 4: Export trained model"
+        ],
+        "chapter": "module-3-nvidia-isaac",
+        "section": "isaac-sim"
+    },
+    "vla-inference": {
+        "title": "VLA Model Inference Pipeline",
+        "steps": [
+            "Step 1: Capture camera image and voice command",
+            "Step 2: Encode vision and language features",
+            "Step 3: Multimodal fusion and reasoning",
+            "Step 4: Generate and execute robot action"
+        ],
+        "chapter": "module-4-vla",
+        "section": "llm-integration"
     }
 }
 
@@ -224,9 +284,161 @@ class DiagramService:
                 "url": None
             }
 
+    async def generate_gif(
+        self,
+        workflow: str,
+        custom_steps: Optional[List[str]] = None,
+        force_regenerate: bool = False
+    ) -> Dict[str, Any]:
+        """
+        Generate an animated GIF for a workflow.
+
+        Since Gemini doesn't directly generate GIFs, we generate individual
+        step images and combine them with metadata for frontend animation.
+
+        Args:
+            workflow: Pre-defined workflow ID or custom workflow name
+            custom_steps: Optional list of custom steps for generation
+            force_regenerate: Force regeneration even if cached
+
+        Returns:
+            Dict with GIF frames/metadata, title, and info
+        """
+        if not self.model:
+            return {
+                "success": False,
+                "error": "Gemini API not configured",
+                "url": None
+            }
+
+        # Get steps from predefined or custom
+        if workflow in GIF_PROMPTS:
+            gif_info = GIF_PROMPTS[workflow]
+            steps = gif_info["steps"]
+            title = gif_info["title"]
+            chapter = gif_info.get("chapter", "general")
+            section = gif_info.get("section", "")
+        else:
+            steps = custom_steps or [
+                f"Step 1: Initialize {workflow}",
+                f"Step 2: Process {workflow}",
+                f"Step 3: Complete {workflow}"
+            ]
+            title = f"{workflow} Workflow"
+            chapter = "custom"
+            section = ""
+
+        # Generate cache key from workflow + steps
+        cache_key = self._get_cache_key(workflow + "".join(steps) + "_gif")
+
+        # Check cache
+        if not force_regenerate and cache_key in self.cache:
+            cached = self.cache[cache_key]
+            if cached.get("type") == "gif":
+                return {
+                    "success": True,
+                    "frames": cached["frames"],
+                    "title": cached["title"],
+                    "chapter": cached.get("chapter", chapter),
+                    "section": cached.get("section", section),
+                    "step_count": len(cached["frames"]),
+                    "cached": True
+                }
+
+        frames = []
+
+        try:
+            # Generate an image for each step
+            for i, step in enumerate(steps):
+                step_prompt = f"""Create a clear, professional technical diagram showing:
+                {step}
+
+                This is step {i+1} of {len(steps)} in a workflow animation.
+                Highlight the current active component in green (#76b900).
+                Use a white background with clean, modern styling.
+                Include a step indicator showing "{i+1}/{len(steps)}" in the corner.
+                """
+
+                response = self.model.generate_content(
+                    [step_prompt],
+                    generation_config=genai.types.GenerationConfig(
+                        temperature=0.7,
+                    )
+                )
+
+                # Check if response contains image
+                if response.candidates and response.candidates[0].content.parts:
+                    for part in response.candidates[0].content.parts:
+                        if hasattr(part, 'inline_data') and part.inline_data:
+                            image_data = part.inline_data.data
+                            mime_type = part.inline_data.mime_type
+
+                            ext = "png" if "png" in mime_type else "jpg"
+                            filename = f"{cache_key}_step{i+1}.{ext}"
+                            filepath = self.cache_dir / chapter / "gifs"
+                            filepath.mkdir(parents=True, exist_ok=True)
+                            filepath = filepath / filename
+
+                            with open(filepath, "wb") as f:
+                                data = base64.b64decode(image_data) if isinstance(image_data, str) else image_data
+                                f.write(data)
+
+                            url = f"/img/generated/{chapter}/gifs/{filename}"
+                            frames.append({
+                                "step": i + 1,
+                                "description": step,
+                                "url": url
+                            })
+                            break
+
+            if frames:
+                # Cache the GIF data
+                self.cache[cache_key] = {
+                    "type": "gif",
+                    "frames": frames,
+                    "title": title,
+                    "chapter": chapter,
+                    "section": section,
+                    "workflow": workflow
+                }
+                self._save_cache()
+
+                return {
+                    "success": True,
+                    "frames": frames,
+                    "title": title,
+                    "chapter": chapter,
+                    "section": section,
+                    "step_count": len(frames),
+                    "cached": False
+                }
+
+            # Fallback: return step descriptions for CSS animation
+            return {
+                "success": True,
+                "frames": [{"step": i+1, "description": s, "url": None} for i, s in enumerate(steps)],
+                "title": title,
+                "chapter": chapter,
+                "section": section,
+                "step_count": len(steps),
+                "animation_only": True,
+                "cached": False
+            }
+
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e),
+                "frames": []
+            }
+
     def get_predefined_diagrams(self) -> Dict[str, Dict]:
         """Get list of all predefined diagram concepts."""
         return DIAGRAM_PROMPTS
+
+    def get_predefined_gifs(self) -> Dict[str, Dict]:
+        """Get list of all predefined GIF/animation workflows."""
+        return GIF_PROMPTS
 
     def get_cached_diagrams(self) -> Dict[str, Any]:
         """Get all cached/generated diagrams."""

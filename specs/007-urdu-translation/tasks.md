@@ -17,8 +17,8 @@
 | US2: Translated Content | 3 tasks |
 | US3: On-Demand | 2 tasks |
 | US4: Side-by-Side | 1 task |
-| **Completed** | **11 tasks** |
-| **Remaining** | **11 tasks** |
+| **Completed** | **22 tasks** |
+| **Remaining** | **3 tasks (P2-P3 optional)** |
 
 ## User Story Mapping
 
@@ -70,8 +70,8 @@
 
 > Interface language toggle
 
-- [ ] T015 Implement instant language switch without page reload
-- [ ] T016 Persist language preference across sessions
+- [X] T015 Implement instant language switch without page reload
+- [X] T016 Persist language preference across sessions
 
 ---
 
@@ -80,8 +80,10 @@
 > Chapter content in Urdu
 
 - [X] T017 Translate Module 1 (ROS2 Fundamentals) to Urdu
-- [ ] T018 Translate Module 2 (Robot Simulation) to Urdu
-- [ ] T019 Display technical terms as "Urdu (English)" format
+- [X] T018 Translate Module 2 (Robot Simulation) to Urdu
+- [X] T018a Translate Module 3 (NVIDIA Isaac) to Urdu
+- [X] T018b Translate Module 4 (VLA Models) to Urdu
+- [X] T019 Display technical terms as "Urdu (English)" format
 
 ---
 
@@ -106,9 +108,9 @@
 
 > Production deployment
 
-- [ ] T023 Deploy translation service
-- [ ] T024 Verify RTL layout on all pages
-- [ ] T025 Test language persistence on production
+- [X] T023 Deploy translation service (static i18n via Docusaurus)
+- [X] T024 Verify RTL layout on all pages
+- [X] T025 Test language persistence on production
 
 ---
 
@@ -119,8 +121,8 @@ Before marking feature complete:
 - [X] Language toggle in header (English/Urdu)
 - [X] Interface labels translate correctly
 - [X] RTL layout renders without breaks
-- [X] At least 2 chapters have Urdu translations
+- [X] At least 2 chapters have Urdu translations (All 4 modules complete!)
 - [X] Code blocks remain LTR in Urdu mode
-- [ ] Technical terms show both languages
-- [ ] On-demand translation works on selection
-- [ ] Language preference persists across sessions
+- [X] Technical terms show both languages
+- [ ] On-demand translation works on selection (P2 - optional)
+- [X] Language preference persists across sessions
