@@ -51,6 +51,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
 
   const refreshSession = useCallback(async () => {
     try {
+      // First check localStorage for user data (set during OAuth callback)
+      const storedUser = localStorage.getItem('auth_user');
+      const storedToken = localStorage.getItem('auth_token');
+
+      if (storedUser && storedToken) {
+        try {
+          const parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
+          setIsLoading(false);
+          return;
+        } catch {
+          // Invalid stored data, clear it
+          localStorage.removeItem('auth_user');
+          localStorage.removeItem('auth_token');
+        }
+      }
+
+      // Fallback: Try to get session from API (may not work due to cross-origin cookies)
       const response = await fetch(`${API_URL}/api/auth/session`, {
         credentials: 'include'
       });
@@ -58,6 +76,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
 
       if (data.authenticated && data.user) {
         setUser(data.user);
+        // Also store in localStorage for persistence
+        localStorage.setItem('auth_user', JSON.stringify(data.user));
       } else {
         setUser(null);
       }
@@ -111,9 +131,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
         method: 'POST',
         credentials: 'include'
       });
-      setUser(null);
     } catch (error) {
       console.error('Sign out failed:', error);
+    } finally {
+      // Always clear local storage and user state
+      localStorage.removeItem('auth_user');
+      localStorage.removeItem('auth_token');
+      setUser(null);
     }
   };
 
