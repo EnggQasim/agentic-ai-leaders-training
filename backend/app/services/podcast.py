@@ -505,21 +505,33 @@ Generate the debate-style podcast script:"""
                 interests=interests
             )
 
-            # Step 2: Generate multi-speaker audio using Higgs
-            # Convert EXPERT_A/EXPERT_B to HOST/EXPERT format for Higgs service
-            higgs_script = script.replace("EXPERT_A:", "HOST:").replace("EXPERT_B:", "EXPERT:")
+            # Step 2: Generate audio
+            # Try Higgs for multi-speaker, fall back to OpenAI if it fails
+            try:
+                # Convert EXPERT_A/EXPERT_B to HOST/EXPERT format for Higgs service
+                higgs_script = script.replace("EXPERT_A:", "HOST:").replace("EXPERT_B:", "EXPERT:")
 
-            audio_data = await self.higgs_service.generate_multi_speaker(
-                script=higgs_script,
-                host_voice=expert_a_voice,
-                expert_voice=expert_b_voice
-            )
+                audio_data = await self.higgs_service.generate_multi_speaker(
+                    script=higgs_script,
+                    host_voice=expert_a_voice,
+                    expert_voice=expert_b_voice
+                )
 
-            # Handle both tuple return (audio_data, segment_info) and just audio_data
-            if isinstance(audio_data, tuple):
-                audio_data = audio_data[0]
+                # Handle both tuple return (audio_data, segment_info) and just audio_data
+                if isinstance(audio_data, tuple):
+                    audio_data = audio_data[0]
 
-            file_ext = "wav"
+                # Check if audio was actually generated
+                if not audio_data or len(audio_data) < 1000:
+                    raise Exception("Higgs returned empty or invalid audio")
+
+                file_ext = "wav"
+            except Exception as higgs_error:
+                print(f"Higgs Audio failed, falling back to OpenAI: {higgs_error}")
+                # Fallback to OpenAI TTS with the full script
+                clean_script = script.replace("EXPERT_A:", "").replace("EXPERT_B:", "")
+                audio_data = await self.generate_audio(clean_script, voice="alloy")
+                file_ext = "mp3"
 
             # Step 3: Save audio file
             filename = f"personalized_{cache_key}.{file_ext}"
