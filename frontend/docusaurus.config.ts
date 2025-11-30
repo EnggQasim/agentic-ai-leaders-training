@@ -5,7 +5,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'Physical AI Textbook',
   tagline: 'Humanoid Robotics with ROS2, Gazebo, NVIDIA Isaac & VLA',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.svg',
 
   future: {
     v4: true,
