@@ -22,6 +22,51 @@ from app.services.higgs_audio import get_higgs_audio_service, PODCAST_VOICES
 TTSProvider = Literal["openai", "higgs"]
 
 
+# Role-based debate prompts for personalized podcasts
+ROLE_DEBATE_PROMPTS = {
+    "student": {
+        "expert_a": "Professor",
+        "expert_a_role": "a university professor who explains theory clearly for exams",
+        "expert_b": "Teaching Assistant",
+        "expert_b_role": "a helpful TA who provides study tips, common pitfalls, and practical examples",
+        "context": "classroom examples, homework scenarios, exam preparation tips",
+        "tone": "educational, encouraging, uses simple analogies"
+    },
+    "researcher": {
+        "expert_a": "Senior Researcher",
+        "expert_a_role": "a senior researcher who discusses cutting-edge papers and theoretical foundations",
+        "expert_b": "Lab Lead",
+        "expert_b_role": "a lab lead who debates practical research challenges and experimental approaches",
+        "context": "recent papers, research directions, experimental methodologies, publication insights",
+        "tone": "academic, analytical, cites research trends"
+    },
+    "engineer": {
+        "expert_a": "System Architect",
+        "expert_a_role": "a system architect who discusses design patterns and architecture decisions",
+        "expert_b": "DevOps Engineer",
+        "expert_b_role": "a DevOps engineer who counters with deployment realities and production challenges",
+        "context": "production code, scaling considerations, debugging, system reliability, CI/CD",
+        "tone": "practical, detail-oriented, focuses on real-world constraints"
+    },
+    "hobbyist": {
+        "expert_a": "Maker",
+        "expert_a_role": "an enthusiastic maker who shares creative DIY approaches",
+        "expert_b": "Tinkerer",
+        "expert_b_role": "a budget-conscious tinkerer who suggests affordable alternatives and weekend projects",
+        "context": "weekend projects, affordable hardware, fun experiments, 3D printing, Arduino",
+        "tone": "fun, encouraging, cost-effective solutions"
+    }
+}
+
+# Default voices for each role
+ROLE_DEFAULT_VOICES = {
+    "student": {"expert_a": "mabel", "expert_b": "chadwick"},
+    "researcher": {"expert_a": "belinda", "expert_b": "vex"},
+    "engineer": {"expert_a": "en_woman", "expert_b": "chadwick"},
+    "hobbyist": {"expert_a": "mabel", "expert_b": "en_man"}
+}
+
+
 # Pre-defined podcast metadata for chapters
 CHAPTER_PODCASTS = {
     "intro": {
@@ -126,6 +171,93 @@ Generate the podcast script:"""
             ],
             temperature=0.7,
             max_tokens=2000
+        )
+
+        return response.choices[0].message.content
+
+    async def generate_personalized_script(
+        self,
+        chapter_content: str,
+        chapter_title: str,
+        user_role: str = "student",
+        experience_level: str = "intermediate",
+        interests: List[str] = None
+    ) -> str:
+        """
+        Generate a personalized podcast script with debate-style conversation.
+
+        Two experts discuss and debate the topic based on user's role:
+        - student: Professor vs Teaching Assistant
+        - researcher: Senior Researcher vs Lab Lead
+        - engineer: System Architect vs DevOps Engineer
+        - hobbyist: Maker vs Tinkerer
+
+        Args:
+            chapter_content: The chapter text to convert
+            chapter_title: Title of the chapter
+            user_role: User's role (student/researcher/engineer/hobbyist)
+            experience_level: beginner/intermediate/advanced
+            interests: List of user interests to emphasize
+
+        Returns:
+            Podcast script with EXPERT_A: and EXPERT_B: prefixes
+        """
+        role_config = ROLE_DEBATE_PROMPTS.get(user_role, ROLE_DEBATE_PROMPTS["student"])
+        interests = interests or []
+
+        # Adjust complexity based on experience level
+        complexity_guide = {
+            "beginner": "Use simple language, avoid jargon, explain every technical term with analogies",
+            "intermediate": "Balance technical accuracy with clarity, assume basic knowledge",
+            "advanced": "Use precise technical language, discuss edge cases and optimizations"
+        }
+
+        interest_focus = ""
+        if interests:
+            interest_focus = f"\n- When relevant, emphasize connections to: {', '.join(interests)}"
+
+        prompt = f"""Create an engaging debate-style podcast script between two experts discussing the following content.
+
+**Characters:**
+- EXPERT_A ({role_config['expert_a']}): {role_config['expert_a_role']}
+- EXPERT_B ({role_config['expert_b']}): {role_config['expert_b_role']}
+
+**Style Guidelines:**
+- Tone: {role_config['tone']}
+- Context/Examples: {role_config['context']}
+- Complexity: {complexity_guide.get(experience_level, complexity_guide['intermediate'])}{interest_focus}
+
+**Conversation Rules:**
+1. EXPERT_A starts by introducing the main concept
+2. EXPERT_B adds a different perspective or practical counterpoint
+3. They debate, agree, disagree, and build on each other's points
+4. Include occasional friendly banter and real-world anecdotes
+5. Both experts should be knowledgeable but approach topics differently
+6. End with a collaborative summary of key takeaways
+
+**Format:**
+- Each line must start with "EXPERT_A:" or "EXPERT_B:"
+- Total length: 4-6 minutes when read aloud
+- 10-15 exchanges between the experts
+
+**Chapter Title:** {chapter_title}
+
+**Content to discuss:**
+{chapter_content[:4000]}
+
+Generate the debate-style podcast script:"""
+
+        response = self.client.chat.completions.create(
+            model=self.chat_model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": f"You are creating a podcast where two experts ({role_config['expert_a']} and {role_config['expert_b']}) debate and discuss technical topics in an engaging way. Make it feel like a real conversation with occasional interruptions, agreements, and friendly disagreements."
+                },
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.8,  # Slightly higher for more creative conversation
+            max_tokens=2500
         )
 
         return response.choices[0].message.content
@@ -306,6 +438,153 @@ Generate the podcast script:"""
                 **podcast
             }
         return None
+
+    async def generate_personalized_podcast(
+        self,
+        chapter_id: str,
+        chapter_content: str,
+        chapter_title: str,
+        user_role: str = "student",
+        experience_level: str = "intermediate",
+        interests: List[str] = None,
+        expert_a_voice: str = None,
+        expert_b_voice: str = None,
+        force_regenerate: bool = False
+    ) -> Dict[str, Any]:
+        """
+        Generate a personalized debate-style podcast for a chapter.
+
+        Args:
+            chapter_id: Unique identifier for the chapter
+            chapter_content: Text content to convert
+            chapter_title: Title of the chapter
+            user_role: User's role (student/researcher/engineer/hobbyist)
+            experience_level: beginner/intermediate/advanced
+            interests: List of user interests
+            expert_a_voice: Voice for Expert A (default based on role)
+            expert_b_voice: Voice for Expert B (default based on role)
+            force_regenerate: Force regeneration even if cached
+
+        Returns:
+            Dict with podcast URL, personalization info, and metadata
+        """
+        # Get default voices for role if not specified
+        role_voices = ROLE_DEFAULT_VOICES.get(user_role, ROLE_DEFAULT_VOICES["student"])
+        expert_a_voice = expert_a_voice or role_voices["expert_a"]
+        expert_b_voice = expert_b_voice or role_voices["expert_b"]
+        interests = interests or []
+
+        # Cache key includes all personalization params
+        cache_key = self._get_cache_key(
+            f"{chapter_id}:{user_role}:{experience_level}:{expert_a_voice}:{expert_b_voice}"
+        )
+
+        if not force_regenerate and cache_key in self.cache.get("podcasts", {}):
+            cached = self.cache["podcasts"][cache_key]
+            return {
+                "success": True,
+                "podcast_id": cache_key,
+                "url": cached["url"],
+                "title": cached["title"],
+                "duration": cached.get("duration", 300),
+                "created_at": cached.get("created_at"),
+                "personalization": cached.get("personalization", {}),
+                "cached": True
+            }
+
+        try:
+            # Get role config for response metadata
+            role_config = ROLE_DEBATE_PROMPTS.get(user_role, ROLE_DEBATE_PROMPTS["student"])
+
+            # Step 1: Generate personalized script
+            script = await self.generate_personalized_script(
+                chapter_content,
+                chapter_title,
+                user_role=user_role,
+                experience_level=experience_level,
+                interests=interests
+            )
+
+            # Step 2: Generate multi-speaker audio using Higgs
+            # Convert EXPERT_A/EXPERT_B to HOST/EXPERT format for Higgs service
+            higgs_script = script.replace("EXPERT_A:", "HOST:").replace("EXPERT_B:", "EXPERT:")
+
+            audio_data = await self.higgs_service.generate_multi_speaker(
+                script=higgs_script,
+                host_voice=expert_a_voice,
+                expert_voice=expert_b_voice
+            )
+
+            # Handle both tuple return (audio_data, segment_info) and just audio_data
+            if isinstance(audio_data, tuple):
+                audio_data = audio_data[0]
+
+            file_ext = "wav"
+
+            # Step 3: Save audio file
+            filename = f"personalized_{cache_key}.{file_ext}"
+            filepath = self.cache_dir / filename
+
+            with open(filepath, "wb") as f:
+                f.write(audio_data)
+
+            # Estimate duration
+            word_count = len(script.split())
+            duration = int((word_count / 150) * 60)
+
+            # Personalization metadata
+            personalization = {
+                "role": user_role,
+                "experience_level": experience_level,
+                "interests": interests,
+                "expert_a": {
+                    "name": role_config["expert_a"],
+                    "voice": expert_a_voice
+                },
+                "expert_b": {
+                    "name": role_config["expert_b"],
+                    "voice": expert_b_voice
+                },
+                "adapted_for": role_config["context"]
+            }
+
+            # Update cache
+            url = f"/audio/podcasts/{filename}"
+            self.cache.setdefault("podcasts", {})[cache_key] = {
+                "url": url,
+                "title": f"{chapter_title} ({role_config['expert_a']} & {role_config['expert_b']})",
+                "chapter_id": chapter_id,
+                "duration": duration,
+                "script": script[:500] + "...",
+                "created_at": datetime.now().isoformat(),
+                "file_size": len(audio_data),
+                "tts_provider": "higgs",
+                "personalization": personalization
+            }
+            self._save_cache()
+
+            return {
+                "success": True,
+                "podcast_id": cache_key,
+                "url": url,
+                "title": f"{chapter_title} ({role_config['expert_a']} & {role_config['expert_b']})",
+                "duration": duration,
+                "created_at": datetime.now().isoformat(),
+                "personalization": personalization,
+                "script_preview": script[:300] + "...",
+                "cached": False
+            }
+
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e),
+                "url": None,
+                "personalization": {
+                    "role": user_role,
+                    "experience_level": experience_level
+                }
+            }
 
 
 # Singleton instance

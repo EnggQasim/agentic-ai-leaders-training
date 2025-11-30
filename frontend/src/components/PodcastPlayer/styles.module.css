@@ -349,6 +349,250 @@
   }
 }
 
+/* Personalization Panel */
+.personalizationPanel {
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(230, 126, 34, 0.08), rgba(230, 126, 34, 0.03));
+}
+
+.panelTitle {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e67e22;
+}
+
+.panelDesc {
+  margin: 0 0 1.5rem 0;
+  font-size: 0.9rem;
+  color: var(--ifm-color-emphasis-600);
+}
+
+.optionGroup {
+  margin-bottom: 1.25rem;
+}
+
+.optionLabel {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ifm-font-color-base);
+  margin-bottom: 0.5rem;
+}
+
+.roleGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.roleButton {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px;
+  background: var(--ifm-color-emphasis-100);
+  border: 2px solid var(--ifm-color-emphasis-200);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.roleButton:hover {
+  border-color: #e67e22;
+  background: var(--ifm-color-emphasis-200);
+}
+
+.roleButton.selectedRole {
+  border-color: #e67e22;
+  background: rgba(230, 126, 34, 0.1);
+}
+
+.roleName {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--ifm-font-color-base);
+}
+
+.roleExperts {
+  font-size: 0.75rem;
+  color: var(--ifm-color-emphasis-600);
+  margin-top: 2px;
+}
+
+.levelButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.levelButton {
+  flex: 1;
+  padding: 10px 16px;
+  background: var(--ifm-color-emphasis-100);
+  border: 2px solid var(--ifm-color-emphasis-200);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--ifm-font-color-base);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.levelButton:hover {
+  border-color: #e67e22;
+}
+
+.levelButton.selectedLevel {
+  border-color: #e67e22;
+  background: rgba(230, 126, 34, 0.1);
+  color: #e67e22;
+}
+
+.voiceSection {
+  margin-bottom: 1.5rem;
+}
+
+.voiceGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.voiceSelect {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.voiceLabel {
+  font-size: 0.8rem;
+  color: var(--ifm-color-emphasis-600);
+}
+
+.voiceDropdown {
+  padding: 8px 12px;
+  background: var(--ifm-color-emphasis-100);
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: var(--ifm-font-color-base);
+  cursor: pointer;
+}
+
+.voiceDropdown:focus {
+  outline: none;
+  border-color: #e67e22;
+}
+
+.panelActions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.cancelButton {
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: var(--ifm-font-color-base);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelButton:hover {
+  background: var(--ifm-color-emphasis-100);
+}
+
+.generateNowButton {
+  padding: 10px 24px;
+  background: #e67e22;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.generateNowButton:hover {
+  background: #d35400;
+  transform: translateY(-1px);
+}
+
+.loadingSubtext {
+  font-size: 0.85rem;
+  color: var(--ifm-color-emphasis-500);
+}
+
+/* Header info with subtitle */
+.headerInfo {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.subtitle {
+  font-size: 0.75rem;
+  color: var(--ifm-color-emphasis-500);
+  margin-top: 2px;
+}
+
+/* Regenerate button */
+.regenerateButton {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ifm-color-emphasis-200);
+  color: var(--ifm-font-color-base);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.regenerateButton:hover {
+  background: var(--ifm-color-emphasis-300);
+}
+
+/* Mobile adjustments for personalization */
+@media (max-width: 768px) {
+  .personalizationPanel {
+    padding: 1rem;
+  }
+
+  .roleGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .voiceGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .levelButtons {
+    flex-wrap: wrap;
+  }
+
+  .levelButton {
+    flex: none;
+    width: calc(33.33% - 6px);
+  }
+
+  .panelActions {
+    flex-direction: column;
+  }
+
+  .cancelButton,
+  .generateNowButton {
+    width: 100%;
+  }
+}
+
 /* Dark mode adjustments */
 [data-theme='dark'] .generateButton {
   background: linear-gradient(135deg, rgba(230, 126, 34, 0.15), rgba(230, 126, 34, 0.08));

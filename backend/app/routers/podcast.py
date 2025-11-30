@@ -3,7 +3,13 @@ from fastapi import APIRouter, HTTPException, BackgroundTasks
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any, List, Literal
 
-from app.services.podcast import get_podcast_service, CHAPTER_PODCASTS, TTSProvider
+from app.services.podcast import (
+    get_podcast_service,
+    CHAPTER_PODCASTS,
+    TTSProvider,
+    ROLE_DEBATE_PROMPTS,
+    ROLE_DEFAULT_VOICES
+)
 from app.services.higgs_audio import get_higgs_audio_service, VOICE_PRESETS
 
 
@@ -65,6 +71,144 @@ class PodcastListItem(BaseModel):
     chapter_id: str
     duration: int
     created_at: str
+
+
+class PersonalizedPodcastRequest(BaseModel):
+    """Request for personalized debate-style podcast."""
+    chapter_id: str = Field(..., description="Chapter identifier")
+    chapter_content: str = Field(..., description="Chapter text content")
+    chapter_title: str = Field(..., description="Chapter title")
+    # Personalization
+    user_role: str = Field("student", description="User role: student/researcher/engineer/hobbyist")
+    experience_level: str = Field("intermediate", description="Experience: beginner/intermediate/advanced")
+    interests: List[str] = Field(default=[], description="User's interests for content focus")
+    # Voice selection
+    expert_a_voice: Optional[str] = Field(None, description="Voice for Expert A (default based on role)")
+    expert_b_voice: Optional[str] = Field(None, description="Voice for Expert B (default based on role)")
+    # Options
+    force_regenerate: bool = Field(False, description="Force regeneration even if cached")
+
+
+class PersonalizedPodcastResponse(BaseModel):
+    """Response with personalized podcast info."""
+    success: bool
+    podcast_id: Optional[str] = None
+    url: Optional[str] = None
+    title: Optional[str] = None
+    duration: Optional[int] = None
+    created_at: Optional[str] = None
+    cached: bool = False
+    error: Optional[str] = None
+    personalization: Optional[Dict[str, Any]] = None
+    script_preview: Optional[str] = None
+
+
+class VoiceOption(BaseModel):
+    """A voice option with metadata."""
+    id: str
+    name: str
+    description: str
+    gender: str
+
+
+class RoleConfig(BaseModel):
+    """Configuration for a user role."""
+    role: str
+    expert_a: str
+    expert_b: str
+    context: str
+    tone: str
+    default_voices: Dict[str, str]
+
+
+class PersonalizationOptionsResponse(BaseModel):
+    """Available personalization options."""
+    roles: List[RoleConfig]
+    voices: List[VoiceOption]
+    experience_levels: List[str]
+
+
+@router.get("/personalization-options", response_model=PersonalizationOptionsResponse)
+async def get_personalization_options() -> PersonalizationOptionsResponse:
+    """
+    Get available personalization options for podcast generation.
+
+    Returns:
+    - Available user roles with expert configurations
+    - Available voices with descriptions
+    - Experience levels
+    """
+    roles = []
+    for role_id, config in ROLE_DEBATE_PROMPTS.items():
+        roles.append(RoleConfig(
+            role=role_id,
+            expert_a=config["expert_a"],
+            expert_b=config["expert_b"],
+            context=config["context"],
+            tone=config["tone"],
+            default_voices=ROLE_DEFAULT_VOICES.get(role_id, {})
+        ))
+
+    voices = [
+        VoiceOption(id="belinda", name="Belinda", description="Warm and professional", gender="female"),
+        VoiceOption(id="mabel", name="Mabel", description="Friendly and expressive", gender="female"),
+        VoiceOption(id="en_woman", name="Sarah", description="Neutral English", gender="female"),
+        VoiceOption(id="chadwick", name="Chadwick", description="Deep and authoritative", gender="male"),
+        VoiceOption(id="vex", name="Vex", description="Dynamic and engaging", gender="male"),
+        VoiceOption(id="en_man", name="James", description="Neutral English", gender="male"),
+    ]
+
+    return PersonalizationOptionsResponse(
+        roles=roles,
+        voices=voices,
+        experience_levels=["beginner", "intermediate", "advanced"]
+    )
+
+
+@router.post("/generate-personalized", response_model=PersonalizedPodcastResponse)
+async def generate_personalized_podcast(request: PersonalizedPodcastRequest) -> PersonalizedPodcastResponse:
+    """
+    Generate a personalized debate-style podcast based on user profile.
+
+    Creates a conversation between two experts whose style depends on user role:
+    - **student**: Professor & Teaching Assistant
+    - **researcher**: Senior Researcher & Lab Lead
+    - **engineer**: System Architect & DevOps Engineer
+    - **hobbyist**: Maker & Tinkerer
+
+    The conversation adapts to:
+    - User's experience level (complexity of explanations)
+    - User's interests (topic emphasis)
+    - Selected voices for each expert
+    """
+    service = get_podcast_service()
+    result = await service.generate_personalized_podcast(
+        chapter_id=request.chapter_id,
+        chapter_content=request.chapter_content,
+        chapter_title=request.chapter_title,
+        user_role=request.user_role,
+        experience_level=request.experience_level,
+        interests=request.interests,
+        expert_a_voice=request.expert_a_voice,
+        expert_b_voice=request.expert_b_voice,
+        force_regenerate=request.force_regenerate
+    )
+    return PersonalizedPodcastResponse(**result)
+
+
+@router.get("/voices", response_model=List[VoiceOption])
+async def list_voices() -> List[VoiceOption]:
+    """
+    List all available voices for podcast generation.
+    """
+    return [
+        VoiceOption(id="belinda", name="Belinda", description="Warm and professional", gender="female"),
+        VoiceOption(id="mabel", name="Mabel", description="Friendly and expressive", gender="female"),
+        VoiceOption(id="en_woman", name="Sarah", description="Neutral English", gender="female"),
+        VoiceOption(id="chadwick", name="Chadwick", description="Deep and authoritative", gender="male"),
+        VoiceOption(id="vex", name="Vex", description="Dynamic and engaging", gender="male"),
+        VoiceOption(id="en_man", name="James", description="Neutral English", gender="male"),
+    ]
 
 
 @router.get("/providers", response_model=TTSProvidersResponse)

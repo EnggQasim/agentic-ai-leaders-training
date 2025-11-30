@@ -8,6 +8,28 @@ interface PodcastPlayerProps {
   className?: string;
 }
 
+interface VoiceOption {
+  id: string;
+  name: string;
+  description: string;
+  gender: string;
+}
+
+interface RoleConfig {
+  role: string;
+  expert_a: string;
+  expert_b: string;
+  context: string;
+  tone: string;
+  default_voices: { expert_a: string; expert_b: string };
+}
+
+interface PersonalizationOptions {
+  roles: RoleConfig[];
+  voices: VoiceOption[];
+  experience_levels: string[];
+}
+
 interface PodcastData {
   success: boolean;
   podcast_id?: string;
@@ -16,6 +38,14 @@ interface PodcastData {
   duration?: number;
   cached?: boolean;
   error?: string;
+  personalization?: {
+    role: string;
+    experience_level: string;
+    expert_a: { name: string; voice: string };
+    expert_b: { name: string; voice: string };
+    adapted_for: string;
+  };
+  script_preview?: string;
 }
 
 const API_URL = process.env.NODE_ENV === 'development'
@@ -26,6 +56,19 @@ function formatTime(seconds: number): string {
   const mins = Math.floor(seconds / 60);
   const secs = Math.floor(seconds % 60);
   return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+// Get user preferences from localStorage or personalization context
+function getUserPreferences() {
+  try {
+    const stored = localStorage.getItem('user_preferences');
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch {
+    // Ignore errors
+  }
+  return { role: 'student', experience_level: 'intermediate', interests: [] };
 }
 
 export default function PodcastPlayer({
@@ -44,7 +87,55 @@ export default function PodcastPlayer({
   const [playbackRate, setPlaybackRate] = useState(1);
   const [showControls, setShowControls] = useState(false);
 
+  // Personalization state
+  const [showPersonalization, setShowPersonalization] = useState(false);
+  const [personalizationOptions, setPersonalizationOptions] = useState<PersonalizationOptions | null>(null);
+  const [selectedRole, setSelectedRole] = useState('student');
+  const [selectedLevel, setSelectedLevel] = useState('intermediate');
+  const [expertAVoice, setExpertAVoice] = useState('mabel');
+  const [expertBVoice, setExpertBVoice] = useState('chadwick');
+  const [podcastInfo, setPodcastInfo] = useState<PodcastData['personalization'] | null>(null);
+
   const audioRef = useRef<HTMLAudioElement>(null);
+
+  // Load personalization options
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/podcast/personalization-options`);
+        if (response.ok) {
+          const data = await response.json();
+          setPersonalizationOptions(data);
+
+          // Load user preferences
+          const prefs = getUserPreferences();
+          if (prefs.role) setSelectedRole(prefs.role);
+          if (prefs.experience_level) setSelectedLevel(prefs.experience_level);
+
+          // Set default voices based on role
+          const roleConfig = data.roles.find((r: RoleConfig) => r.role === prefs.role);
+          if (roleConfig?.default_voices) {
+            setExpertAVoice(roleConfig.default_voices.expert_a || 'mabel');
+            setExpertBVoice(roleConfig.default_voices.expert_b || 'chadwick');
+          }
+        }
+      } catch {
+        // Use defaults
+      }
+    };
+    fetchOptions();
+  }, []);
+
+  // Update voices when role changes
+  useEffect(() => {
+    if (personalizationOptions) {
+      const roleConfig = personalizationOptions.roles.find(r => r.role === selectedRole);
+      if (roleConfig?.default_voices) {
+        setExpertAVoice(roleConfig.default_voices.expert_a || 'mabel');
+        setExpertBVoice(roleConfig.default_voices.expert_b || 'chadwick');
+      }
+    }
+  }, [selectedRole, personalizationOptions]);
 
   // Check if podcast already exists on mount
   useEffect(() => {
@@ -55,6 +146,9 @@ export default function PodcastPlayer({
           const data = await response.json();
           if (data.has_generated_podcast && data.podcast?.url) {
             setPodcastUrl(data.podcast.url);
+            if (data.podcast.personalization) {
+              setPodcastInfo(data.podcast.personalization);
+            }
           }
         }
       } catch {
@@ -64,12 +158,15 @@ export default function PodcastPlayer({
     checkExisting();
   }, [chapterId]);
 
-  const generatePodcast = useCallback(async () => {
+  const generatePersonalizedPodcast = useCallback(async () => {
     setIsLoading(true);
     setError(null);
+    setShowPersonalization(false);
 
     try {
-      const response = await fetch(`${API_URL}/api/podcast/generate`, {
+      const prefs = getUserPreferences();
+
+      const response = await fetch(`${API_URL}/api/podcast/generate-personalized`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,6 +175,11 @@ export default function PodcastPlayer({
           chapter_id: chapterId,
           chapter_content: chapterContent || `Content for ${chapterTitle}`,
           chapter_title: chapterTitle,
+          user_role: selectedRole,
+          experience_level: selectedLevel,
+          interests: prefs.interests || [],
+          expert_a_voice: expertAVoice,
+          expert_b_voice: expertBVoice,
           force_regenerate: false,
         }),
       });
@@ -90,6 +192,7 @@ export default function PodcastPlayer({
 
       if (data.success && data.url) {
         setPodcastUrl(data.url);
+        setPodcastInfo(data.personalization || null);
         setShowControls(true);
       } else {
         setError(data.error || 'Failed to generate podcast');
@@ -99,7 +202,7 @@ export default function PodcastPlayer({
     } finally {
       setIsLoading(false);
     }
-  }, [chapterId, chapterTitle, chapterContent]);
+  }, [chapterId, chapterTitle, chapterContent, selectedRole, selectedLevel, expertAVoice, expertBVoice]);
 
   const togglePlay = () => {
     if (!audioRef.current) return;
@@ -157,7 +260,7 @@ export default function PodcastPlayer({
     if (!podcastUrl) return;
     const link = document.createElement('a');
     link.href = podcastUrl;
-    link.download = `${chapterTitle.replace(/\s+/g, '-')}-podcast.mp3`;
+    link.download = `${chapterTitle.replace(/\s+/g, '-')}-podcast.wav`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -168,13 +271,15 @@ export default function PodcastPlayer({
     setCurrentTime(0);
   };
 
+  const currentRoleConfig = personalizationOptions?.roles.find(r => r.role === selectedRole);
+
   return (
     <div className={`${styles.podcastContainer} ${className}`}>
-      {!podcastUrl && !isLoading && !error && (
+      {!podcastUrl && !isLoading && !error && !showPersonalization && (
         <button
           className={styles.generateButton}
-          onClick={generatePodcast}
-          aria-label={`Generate podcast for ${chapterTitle}`}
+          onClick={() => setShowPersonalization(true)}
+          aria-label={`Generate personalized podcast for ${chapterTitle}`}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
@@ -182,14 +287,110 @@ export default function PodcastPlayer({
             <line x1="12" y1="19" x2="12" y2="23" />
             <line x1="8" y1="23" x2="16" y2="23" />
           </svg>
-          <span>Generate Podcast</span>
+          <span>Generate Personalized Podcast</span>
         </button>
+      )}
+
+      {showPersonalization && personalizationOptions && (
+        <div className={styles.personalizationPanel}>
+          <h4 className={styles.panelTitle}>Customize Your Podcast</h4>
+          <p className={styles.panelDesc}>
+            Two experts will discuss this topic in a debate style tailored to your learning profile.
+          </p>
+
+          <div className={styles.optionGroup}>
+            <label className={styles.optionLabel}>Your Role</label>
+            <div className={styles.roleGrid}>
+              {personalizationOptions.roles.map((role) => (
+                <button
+                  key={role.role}
+                  className={`${styles.roleButton} ${selectedRole === role.role ? styles.selectedRole : ''}`}
+                  onClick={() => setSelectedRole(role.role)}
+                >
+                  <span className={styles.roleName}>{role.role.charAt(0).toUpperCase() + role.role.slice(1)}</span>
+                  <span className={styles.roleExperts}>{role.expert_a} & {role.expert_b}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className={styles.optionGroup}>
+            <label className={styles.optionLabel}>Experience Level</label>
+            <div className={styles.levelButtons}>
+              {personalizationOptions.experience_levels.map((level) => (
+                <button
+                  key={level}
+                  className={`${styles.levelButton} ${selectedLevel === level ? styles.selectedLevel : ''}`}
+                  onClick={() => setSelectedLevel(level)}
+                >
+                  {level.charAt(0).toUpperCase() + level.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className={styles.voiceSection}>
+            <label className={styles.optionLabel}>Choose Voices</label>
+            <div className={styles.voiceGrid}>
+              <div className={styles.voiceSelect}>
+                <span className={styles.voiceLabel}>
+                  {currentRoleConfig?.expert_a || 'Expert A'}:
+                </span>
+                <select
+                  value={expertAVoice}
+                  onChange={(e) => setExpertAVoice(e.target.value)}
+                  className={styles.voiceDropdown}
+                >
+                  {personalizationOptions.voices.map((voice) => (
+                    <option key={voice.id} value={voice.id}>
+                      {voice.name} ({voice.description})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className={styles.voiceSelect}>
+                <span className={styles.voiceLabel}>
+                  {currentRoleConfig?.expert_b || 'Expert B'}:
+                </span>
+                <select
+                  value={expertBVoice}
+                  onChange={(e) => setExpertBVoice(e.target.value)}
+                  className={styles.voiceDropdown}
+                >
+                  {personalizationOptions.voices.map((voice) => (
+                    <option key={voice.id} value={voice.id}>
+                      {voice.name} ({voice.description})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.panelActions}>
+            <button
+              className={styles.cancelButton}
+              onClick={() => setShowPersonalization(false)}
+            >
+              Cancel
+            </button>
+            <button
+              className={styles.generateNowButton}
+              onClick={generatePersonalizedPodcast}
+            >
+              Generate Podcast
+            </button>
+          </div>
+        </div>
       )}
 
       {isLoading && (
         <div className={styles.loadingContainer}>
           <div className={styles.spinner} />
-          <span>Generating podcast... This may take 1-2 minutes</span>
+          <span>Creating your personalized podcast...</span>
+          <span className={styles.loadingSubtext}>
+            Two experts are preparing to discuss this topic for you
+          </span>
         </div>
       )}
 
@@ -201,8 +402,8 @@ export default function PodcastPlayer({
             <line x1="12" y1="16" x2="12.01" y2="16" />
           </svg>
           <span>{error}</span>
-          <button className={styles.retryButton} onClick={generatePodcast}>
-            Retry
+          <button className={styles.retryButton} onClick={() => setShowPersonalization(true)}>
+            Try Again
           </button>
         </div>
       )}
@@ -224,7 +425,19 @@ export default function PodcastPlayer({
               <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
               <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
             </svg>
-            <span className={styles.title}>Podcast: {chapterTitle}</span>
+            <div className={styles.headerInfo}>
+              <span className={styles.title}>
+                {podcastInfo
+                  ? `${podcastInfo.expert_a?.name || 'Expert A'} & ${podcastInfo.expert_b?.name || 'Expert B'}`
+                  : 'Podcast'
+                }: {chapterTitle}
+              </span>
+              {podcastInfo && (
+                <span className={styles.subtitle}>
+                  Tailored for {podcastInfo.role} ({podcastInfo.experience_level})
+                </span>
+              )}
+            </div>
           </div>
 
           <div className={styles.mainControls}>
@@ -321,6 +534,24 @@ export default function PodcastPlayer({
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <polyline points="7 10 12 15 17 10" />
                 <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+            </button>
+
+            <button
+              className={styles.regenerateButton}
+              onClick={() => {
+                setPodcastUrl(null);
+                setPodcastInfo(null);
+                setShowPersonalization(true);
+              }}
+              aria-label="Generate new podcast"
+              title="Generate with different settings"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 2v6h-6" />
+                <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+                <path d="M3 22v-6h6" />
+                <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
               </svg>
             </button>
           </div>
