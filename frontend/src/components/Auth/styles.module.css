@@ -28,6 +28,59 @@
   position: relative;
 }
 
+/* User Button with Avatar and Name */
+.userButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px 4px 4px;
+  background: var(--ifm-color-emphasis-100);
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.userButton:hover {
+  background: var(--ifm-color-emphasis-200);
+  border-color: var(--ifm-color-emphasis-300);
+}
+
+.userButton .avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.userButton .avatarPlaceholder {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ifm-color-primary);
+  color: white;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.userName {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--ifm-font-color-base);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  color: var(--ifm-color-emphasis-600);
+  flex-shrink: 0;
+}
+
 .avatarButton {
   display: flex;
   align-items: center;
@@ -216,5 +269,18 @@
   .signInButton {
     padding: 8px;
     border-radius: 50%;
+  }
+
+  .userName {
+    display: none;
+  }
+
+  .userButton {
+    padding: 4px;
+    border-radius: 50%;
+  }
+
+  .chevron {
+    display: none;
   }
 }

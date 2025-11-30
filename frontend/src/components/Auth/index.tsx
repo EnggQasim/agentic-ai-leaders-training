@@ -228,10 +228,15 @@ export function UserMenu(): JSX.Element {
     return <SignInButton />;
   }
 
+  // Get display name (first name or full name)
+  const displayName = user.name
+    ? user.name.split(' ')[0] // First name only
+    : user.email?.split('@')[0] || 'User';
+
   return (
     <div className={styles.userMenuContainer}>
       <button
-        className={styles.avatarButton}
+        className={styles.userButton}
         onClick={() => setShowDropdown(!showDropdown)}
         aria-label="User menu"
       >
@@ -246,6 +251,10 @@ export function UserMenu(): JSX.Element {
             {(user.name || user.email || 'U')[0].toUpperCase()}
           </div>
         )}
+        <span className={styles.userName}>{displayName}</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={styles.chevron}>
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
       </button>
 
       {showDropdown && (
