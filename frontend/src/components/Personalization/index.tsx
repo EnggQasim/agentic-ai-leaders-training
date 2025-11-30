@@ -61,6 +61,18 @@ const API_URL = process.env.NODE_ENV === 'development'
   ? 'http://localhost:8000'
   : 'https://mqasim077-physical-ai-textbook-api.hf.space';
 
+// Helper to get auth headers
+function getAuthHeaders(): HeadersInit {
+  const token = localStorage.getItem('auth_token');
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+}
+
 // Personalization Context
 const PersonalizationContext = createContext<PersonalizationContextType | null>(null);
 
@@ -94,7 +106,10 @@ export function PersonalizationProvider({ children }: { children: React.ReactNod
       }
 
       try {
+        const headers = getAuthHeaders();
+
         const statusRes = await fetch(`${API_URL}/api/personalization/status`, {
+          headers,
           credentials: 'include'
         });
         const statusData: OnboardingStatus = await statusRes.json();
@@ -105,17 +120,21 @@ export function PersonalizationProvider({ children }: { children: React.ReactNod
         } else {
           // Fetch existing preferences
           const prefsRes = await fetch(`${API_URL}/api/personalization/preferences`, {
+            headers,
             credentials: 'include'
           });
           if (prefsRes.ok) {
             const prefsData = await prefsRes.json();
             if (prefsData) {
               setPreferences(prefsData);
+              // Also store in localStorage for quick access
+              localStorage.setItem('user_preferences', JSON.stringify(prefsData));
             }
           }
 
           // Fetch progress
           const progressRes = await fetch(`${API_URL}/api/personalization/progress`, {
+            headers,
             credentials: 'include'
           });
           if (progressRes.ok) {
@@ -136,7 +155,7 @@ export function PersonalizationProvider({ children }: { children: React.ReactNod
     try {
       const res = await fetch(`${API_URL}/api/personalization/preferences`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         credentials: 'include',
         body: JSON.stringify({ role, experience_level: level, interests })
       });
@@ -146,6 +165,11 @@ export function PersonalizationProvider({ children }: { children: React.ReactNod
         setPreferences(data);
         setNeedsOnboarding(false);
         setShowOnboarding(false);
+        // Store in localStorage for persistence
+        localStorage.setItem('user_preferences', JSON.stringify(data));
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        console.error('Failed to save preferences:', res.status, errorData);
       }
     } catch (error) {
       console.error('Failed to save preferences:', error);
@@ -158,7 +182,7 @@ export function PersonalizationProvider({ children }: { children: React.ReactNod
     try {
       const res = await fetch(`${API_URL}/api/personalization/progress`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         credentials: 'include',
         body: JSON.stringify({
           chapter_id: chapterId,
@@ -182,7 +206,10 @@ export function PersonalizationProvider({ children }: { children: React.ReactNod
         url.searchParams.set('current_chapter', currentChapter);
       }
 
-      const res = await fetch(url.toString(), { credentials: 'include' });
+      const res = await fetch(url.toString(), {
+        headers: getAuthHeaders(),
+        credentials: 'include'
+      });
       if (res.ok) {
         setRecommendations(await res.json());
       }
@@ -195,7 +222,7 @@ export function PersonalizationProvider({ children }: { children: React.ReactNod
     try {
       const res = await fetch(`${API_URL}/api/personalization/simplify`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         credentials: 'include',
         body: JSON.stringify({ content, chapter_id: chapterId })
       });

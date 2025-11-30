@@ -1,5 +1,5 @@
 """Personalization API endpoints."""
-from fastapi import APIRouter, HTTPException, Cookie
+from fastapi import APIRouter, HTTPException, Cookie, Header
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any, List
 
@@ -72,12 +72,23 @@ class OnboardingStatusResponse(BaseModel):
 
 
 # Helper function to get user ID from token
-def get_user_id_from_token(auth_token: Optional[str]) -> Optional[str]:
-    """Extract user ID from auth token."""
-    if not auth_token:
+def get_user_id_from_token(
+    auth_token: Optional[str] = None,
+    authorization: Optional[str] = None
+) -> Optional[str]:
+    """Extract user ID from auth token (cookie or header)."""
+    # Try Authorization header first (Bearer token)
+    token = None
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization[7:]
+    elif auth_token:
+        token = auth_token
+
+    if not token:
         return None
+
     auth_service = get_auth_service()
-    user_info = auth_service.verify_token(auth_token)
+    user_info = auth_service.verify_token(token)
     return user_info["user_id"] if user_info else None
 
 
@@ -85,13 +96,14 @@ def get_user_id_from_token(auth_token: Optional[str]) -> Optional[str]:
 
 @router.get("/status", response_model=OnboardingStatusResponse)
 async def get_onboarding_status(
-    auth_token: Optional[str] = Cookie(None, alias="auth_token")
+    auth_token: Optional[str] = Cookie(None, alias="auth_token"),
+    authorization: Optional[str] = Header(None)
 ) -> OnboardingStatusResponse:
     """
     Check if user needs onboarding and get available options.
     """
     service = get_personalization_service()
-    user_id = get_user_id_from_token(auth_token)
+    user_id = get_user_id_from_token(auth_token, authorization)
 
     return OnboardingStatusResponse(
         needs_onboarding=service.needs_onboarding(user_id) if user_id else True,
@@ -102,12 +114,13 @@ async def get_onboarding_status(
 
 @router.get("/preferences", response_model=Optional[PreferencesResponse])
 async def get_preferences(
-    auth_token: Optional[str] = Cookie(None, alias="auth_token")
+    auth_token: Optional[str] = Cookie(None, alias="auth_token"),
+    authorization: Optional[str] = Header(None)
 ) -> Optional[PreferencesResponse]:
     """
     Get current user's preferences.
     """
-    user_id = get_user_id_from_token(auth_token)
+    user_id = get_user_id_from_token(auth_token, authorization)
     if not user_id:
         raise HTTPException(status_code=401, detail="Not authenticated")
 
@@ -123,12 +136,13 @@ async def get_preferences(
 @router.post("/preferences", response_model=PreferencesResponse)
 async def set_preferences(
     request: SetPreferencesRequest,
-    auth_token: Optional[str] = Cookie(None, alias="auth_token")
+    auth_token: Optional[str] = Cookie(None, alias="auth_token"),
+    authorization: Optional[str] = Header(None)
 ) -> PreferencesResponse:
     """
     Set or update user preferences.
     """
-    user_id = get_user_id_from_token(auth_token)
+    user_id = get_user_id_from_token(auth_token, authorization)
     if not user_id:
         raise HTTPException(status_code=401, detail="Not authenticated")
 
@@ -148,12 +162,13 @@ async def set_preferences(
 
 @router.delete("/preferences")
 async def delete_preferences(
-    auth_token: Optional[str] = Cookie(None, alias="auth_token")
+    auth_token: Optional[str] = Cookie(None, alias="auth_token"),
+    authorization: Optional[str] = Header(None)
 ) -> Dict[str, bool]:
     """
     Delete user preferences (reset onboarding).
     """
-    user_id = get_user_id_from_token(auth_token)
+    user_id = get_user_id_from_token(auth_token, authorization)
     if not user_id:
         raise HTTPException(status_code=401, detail="Not authenticated")
 
@@ -165,12 +180,13 @@ async def delete_preferences(
 
 @router.get("/progress", response_model=ProgressResponse)
 async def get_progress(
-    auth_token: Optional[str] = Cookie(None, alias="auth_token")
+    auth_token: Optional[str] = Cookie(None, alias="auth_token"),
+    authorization: Optional[str] = Header(None)
 ) -> ProgressResponse:
     """
     Get user's reading progress.
     """
-    user_id = get_user_id_from_token(auth_token)
+    user_id = get_user_id_from_token(auth_token, authorization)
     if not user_id:
         raise HTTPException(status_code=401, detail="Not authenticated")
 
@@ -183,12 +199,13 @@ async def get_progress(
 @router.post("/progress", response_model=ProgressResponse)
 async def update_progress(
     request: UpdateProgressRequest,
-    auth_token: Optional[str] = Cookie(None, alias="auth_token")
+    auth_token: Optional[str] = Cookie(None, alias="auth_token"),
+    authorization: Optional[str] = Header(None)
 ) -> ProgressResponse:
     """
     Update reading progress for a chapter.
     """
-    user_id = get_user_id_from_token(auth_token)
+    user_id = get_user_id_from_token(auth_token, authorization)
     if not user_id:
         raise HTTPException(status_code=401, detail="Not authenticated")
 
@@ -207,12 +224,13 @@ async def update_progress(
 async def get_recommendations(
     current_chapter: Optional[str] = None,
     limit: int = 3,
-    auth_token: Optional[str] = Cookie(None, alias="auth_token")
+    auth_token: Optional[str] = Cookie(None, alias="auth_token"),
+    authorization: Optional[str] = Header(None)
 ) -> List[RecommendationItem]:
     """
     Get personalized chapter recommendations.
     """
-    user_id = get_user_id_from_token(auth_token)
+    user_id = get_user_id_from_token(auth_token, authorization)
     if not user_id:
         # Return default recommendations for anonymous users
         user_id = "anonymous"
@@ -230,12 +248,13 @@ async def get_recommendations(
 @router.post("/simplify", response_model=SimplifyResponse)
 async def simplify_content(
     request: SimplifyRequest,
-    auth_token: Optional[str] = Cookie(None, alias="auth_token")
+    auth_token: Optional[str] = Cookie(None, alias="auth_token"),
+    authorization: Optional[str] = Header(None)
 ) -> SimplifyResponse:
     """
     Get simplified version of content based on user's experience level.
     """
-    user_id = get_user_id_from_token(auth_token)
+    user_id = get_user_id_from_token(auth_token, authorization)
     service = get_personalization_service()
 
     # Get user's level or default to beginner
