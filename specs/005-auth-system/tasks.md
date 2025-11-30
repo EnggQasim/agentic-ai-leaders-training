@@ -17,8 +17,8 @@
 | US2: Google OAuth | 1 task |
 | US3: Profile | 1 task |
 | US4: Sign Out | 1 task |
-| **Completed** | **15 tasks** |
-| **Remaining** | **5 tasks** |
+| **Completed** | **17 tasks** |
+| **Remaining** | **3 tasks** |
 
 ## User Story Mapping
 
@@ -62,7 +62,7 @@
 - [X] T011 Create SignInButton component with OAuth options
 - [X] T012 Create UserMenu component (avatar dropdown)
 - [X] T013 Implement auth state management (AuthProvider, useAuth hook)
-- [ ] T014 Add auth components to Docusaurus navbar (integration step)
+- [X] T014 Add auth components to Docusaurus navbar (custom NavbarItem)
 - [X] T015 Create Auth component with loading states
 
 ---
@@ -88,7 +88,7 @@
 
 > User profile management
 
-- [ ] T019 Create Profile page with user information (requires Docusaurus integration)
+- [X] T019 Create Profile page with user information (/profile)
 
 ---
 

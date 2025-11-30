@@ -1,0 +1,230 @@
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: calc(100vh - 200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Loading State */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: var(--ifm-color-emphasis-600);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--ifm-color-emphasis-200);
+  border-top-color: var(--ifm-color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Not Signed In State */
+.notSignedIn {
+  text-align: center;
+  padding: 3rem;
+  background: var(--ifm-color-emphasis-100);
+  border-radius: 16px;
+  max-width: 400px;
+}
+
+.notSignedIn svg {
+  color: var(--ifm-color-emphasis-400);
+  margin-bottom: 1rem;
+}
+
+.notSignedIn h1 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.notSignedIn p {
+  color: var(--ifm-color-emphasis-600);
+  margin-bottom: 0.25rem;
+}
+
+.hint {
+  font-size: 0.9rem;
+  color: var(--ifm-color-emphasis-500);
+}
+
+/* Profile Card */
+.profileCard {
+  width: 100%;
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, var(--ifm-color-primary-lightest), var(--ifm-color-primary-lighter));
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 4px solid white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.avatarPlaceholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--ifm-color-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 600;
+  border: 4px solid white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.headerInfo h1 {
+  font-size: 1.5rem;
+  margin: 0;
+  color: var(--ifm-font-color-base);
+}
+
+.email {
+  margin: 0.25rem 0 0;
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.95rem;
+}
+
+/* Details Section */
+.details {
+  padding: 1.5rem 2rem;
+}
+
+.detailItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.detailItem:last-child {
+  border-bottom: none;
+}
+
+.label {
+  font-weight: 500;
+  color: var(--ifm-color-emphasis-600);
+}
+
+.value {
+  color: var(--ifm-font-color-base);
+}
+
+.providerBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--ifm-color-emphasis-100);
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+/* Actions Section */
+.actions {
+  padding: 1.5rem 2rem;
+  border-top: 1px solid var(--ifm-color-emphasis-200);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.signOutButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--ifm-color-danger);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.signOutButton:hover {
+  background: var(--ifm-color-danger-dark);
+  transform: translateY(-1px);
+}
+
+/* Dark mode adjustments */
+[data-theme='dark'] .profileCard {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme='dark'] .header {
+  background: linear-gradient(135deg, rgba(118, 185, 0, 0.2), rgba(118, 185, 0, 0.1));
+}
+
+[data-theme='dark'] .avatar,
+[data-theme='dark'] .avatarPlaceholder {
+  border-color: var(--ifm-background-color);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .header {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem;
+  }
+
+  .headerInfo h1 {
+    font-size: 1.25rem;
+  }
+
+  .details {
+    padding: 1rem;
+  }
+
+  .detailItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .actions {
+    padding: 1rem;
+    justify-content: center;
+  }
+
+  .signOutButton {
+    width: 100%;
+    justify-content: center;
+  }
+}
