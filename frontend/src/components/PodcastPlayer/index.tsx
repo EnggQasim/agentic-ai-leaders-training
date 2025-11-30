@@ -6,6 +6,7 @@ interface PodcastPlayerProps {
   chapterTitle: string;
   chapterContent?: string;
   className?: string;
+  compact?: boolean; // Compact mode shows just an icon bar
 }
 
 interface VoiceOption {
@@ -76,6 +77,7 @@ export default function PodcastPlayer({
   chapterTitle,
   chapterContent = '',
   className = '',
+  compact = false,
 }: PodcastPlayerProps): JSX.Element {
   const [podcastUrl, setPodcastUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -272,6 +274,28 @@ export default function PodcastPlayer({
   };
 
   const currentRoleConfig = personalizationOptions?.roles.find(r => r.role === selectedRole);
+
+  // Compact header bar with podcast icon
+  if (compact && !showPersonalization && !podcastUrl && !isLoading) {
+    return (
+      <div className={`${styles.compactBar} ${className}`}>
+        <button
+          className={styles.compactButton}
+          onClick={() => setShowPersonalization(true)}
+          aria-label={`Listen to this chapter as a podcast`}
+          title="Generate AI Podcast"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+            <line x1="12" y1="19" x2="12" y2="23" />
+            <line x1="8" y1="23" x2="16" y2="23" />
+          </svg>
+          <span>Listen as Podcast</span>
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className={`${styles.podcastContainer} ${className}`}>

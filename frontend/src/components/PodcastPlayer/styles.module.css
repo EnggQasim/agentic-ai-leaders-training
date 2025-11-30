@@ -1,3 +1,39 @@
+/* Compact Podcast Bar - appears at top of each chapter */
+.compactBar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, rgba(230, 126, 34, 0.08), rgba(230, 126, 34, 0.03));
+  border: 1px solid rgba(230, 126, 34, 0.2);
+  border-radius: 8px;
+}
+
+.compactButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #e67e22;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.compactButton:hover {
+  background: #d35400;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(230, 126, 34, 0.3);
+}
+
+.compactButton svg {
+  flex-shrink: 0;
+}
+
 /* Podcast Container */
 .podcastContainer {
   margin: 1.5rem 0;
@@ -594,6 +630,11 @@
 }
 
 /* Dark mode adjustments */
+[data-theme='dark'] .compactBar {
+  background: linear-gradient(135deg, rgba(230, 126, 34, 0.12), rgba(230, 126, 34, 0.05));
+  border-color: rgba(230, 126, 34, 0.3);
+}
+
 [data-theme='dark'] .generateButton {
   background: linear-gradient(135deg, rgba(230, 126, 34, 0.15), rgba(230, 126, 34, 0.08));
 }
