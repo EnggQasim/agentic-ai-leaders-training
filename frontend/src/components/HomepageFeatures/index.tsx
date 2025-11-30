@@ -2,6 +2,7 @@ import type {ReactNode} from 'react';
 import clsx from 'clsx';
 import Heading from '@theme/Heading';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import Translate, {translate} from '@docusaurus/Translate';
 import styles from './styles.module.css';
 
 type FeatureItem = {
@@ -12,33 +13,33 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Industry-Standard Tools',
+    title: translate({id: 'homepage.feature1.title', message: 'Industry-Standard Tools'}),
     icon: '/img/icons/industry-tools-icon.svg',
     description: (
-      <>
+      <Translate id="homepage.feature1.description">
         Learn ROS2, the foundation of modern robotics used by companies worldwide.
         Build real robot applications with battle-tested frameworks.
-      </>
+      </Translate>
     ),
   },
   {
-    title: 'GPU-Accelerated Simulation',
+    title: translate({id: 'homepage.feature2.title', message: 'GPU-Accelerated Simulation'}),
     icon: '/img/icons/gpu-simulation-icon.svg',
     description: (
-      <>
+      <Translate id="homepage.feature2.description">
         Master NVIDIA Isaac Sim for photorealistic simulation, synthetic data
         generation, and seamless sim-to-real transfer.
-      </>
+      </Translate>
     ),
   },
   {
-    title: 'Cutting-Edge AI',
+    title: translate({id: 'homepage.feature3.title', message: 'Cutting-Edge AI'}),
     icon: '/img/icons/cutting-edge-ai-icon.svg',
     description: (
-      <>
+      <Translate id="homepage.feature3.description">
         Implement Vision-Language-Action models to control robots with natural
         language commands and multimodal understanding.
-      </>
+      </Translate>
     ),
   },
 ];

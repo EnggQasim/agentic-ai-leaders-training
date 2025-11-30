@@ -4,6 +4,7 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import Layout from '@theme/Layout';
+import Translate, {translate} from '@docusaurus/Translate';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import Heading from '@theme/Heading';
 
@@ -25,7 +26,7 @@ function HomepageHeader() {
               <Link
                 className="button button--secondary button--lg"
                 to="/docs/intro">
-                Start Learning 🚀
+                <Translate id="homepage.hero.button">Start Learning 🚀</Translate>
               </Link>
             </div>
           </div>
@@ -61,7 +62,7 @@ function ModuleCard({module}: {module: ModuleInfo}): ReactNode {
         <Heading as="h3">{module.title}</Heading>
         <p>{module.description}</p>
         <Link className="button button--primary button--sm" to={module.link}>
-          Explore Module
+          <Translate id="homepage.module.explore">Explore Module</Translate>
         </Link>
       </div>
     </div>
@@ -74,17 +75,22 @@ function LearningJourney(): ReactNode {
     <section className={styles.learningJourney}>
       <div className="container">
         <Heading as="h2" className="text--center margin-bottom--lg">
-          From Learning to Creation
+          <Translate id="homepage.journey.title">From Learning to Creation</Translate>
         </Heading>
         <div className={styles.journeyAnimation}>
           <img
             src={journeyGif}
-            alt="Animation showing the complete journey: A human learns from the Physical AI book, gains knowledge of ROS2, Gazebo, Isaac, and VLA, then builds and assembles a humanoid robot which comes to life and works autonomously"
+            alt={translate({
+              id: 'homepage.journey.imageAlt',
+              message: 'Animation showing the complete journey: A human learns from the Physical AI book, gains knowledge of ROS2, Gazebo, Isaac, and VLA, then builds and assembles a humanoid robot which comes to life and works autonomously',
+            })}
             className={styles.journeyGif}
           />
         </div>
         <p className="text--center margin-top--md">
-          Learn Physical AI concepts, build your own humanoid robot, and bring it to life!
+          <Translate id="homepage.journey.description">
+            Learn Physical AI concepts, build your own humanoid robot, and bring it to life!
+          </Translate>
         </p>
       </div>
     </section>
@@ -94,26 +100,26 @@ function LearningJourney(): ReactNode {
 function ModuleCards(): ReactNode {
   const modules: ModuleInfo[] = [
     {
-      title: 'Module 1: ROS2 Fundamentals',
-      description: 'Master the Robot Operating System 2 - nodes, topics, services, actions, and Python integration with rclpy.',
+      title: translate({id: 'homepage.module1.title', message: 'Module 1: ROS2 Fundamentals'}),
+      description: translate({id: 'homepage.module1.description', message: 'Master the Robot Operating System 2 - nodes, topics, services, actions, and Python integration with rclpy.'}),
       link: '/docs/module-1-ros2',
       icon: '/img/icons/ros2-icon.svg',
     },
     {
-      title: 'Module 2: Robot Simulation',
-      description: 'Learn Gazebo simulation, physics engines, sensor modeling, and URDF robot descriptions.',
+      title: translate({id: 'homepage.module2.title', message: 'Module 2: Robot Simulation'}),
+      description: translate({id: 'homepage.module2.description', message: 'Learn Gazebo simulation, physics engines, sensor modeling, and URDF robot descriptions.'}),
       link: '/docs/module-2-simulation',
       icon: '/img/icons/simulation-icon.svg',
     },
     {
-      title: 'Module 3: NVIDIA Isaac',
-      description: 'GPU-accelerated robotics with Isaac Sim, Isaac ROS, photorealistic simulation, and edge deployment.',
+      title: translate({id: 'homepage.module3.title', message: 'Module 3: NVIDIA Isaac'}),
+      description: translate({id: 'homepage.module3.description', message: 'GPU-accelerated robotics with Isaac Sim, Isaac ROS, photorealistic simulation, and edge deployment.'}),
       link: '/docs/module-3-nvidia-isaac',
       icon: '/img/icons/isaac-icon.svg',
     },
     {
-      title: 'Module 4: VLA Models',
-      description: 'Vision-Language-Action models, voice commands, LLM integration, and natural language robot control.',
+      title: translate({id: 'homepage.module4.title', message: 'Module 4: VLA Models'}),
+      description: translate({id: 'homepage.module4.description', message: 'Vision-Language-Action models, voice commands, LLM integration, and natural language robot control.'}),
       link: '/docs/module-4-vla',
       icon: '/img/icons/vla-icon.svg',
     },
@@ -123,7 +129,7 @@ function ModuleCards(): ReactNode {
     <section className={styles.modules}>
       <div className="container">
         <Heading as="h2" className="text--center margin-bottom--lg">
-          Course Modules
+          <Translate id="homepage.modules.title">Course Modules</Translate>
         </Heading>
         <div className="row">
           {modules.map((module, idx) => (

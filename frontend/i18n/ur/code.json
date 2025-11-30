@@ -1,4 +1,84 @@
 {
+  "homepage.hero.button": {
+    "message": "سیکھنا شروع کریں 🚀",
+    "description": "Hero button text"
+  },
+  "homepage.module.explore": {
+    "message": "ماڈیول دیکھیں",
+    "description": "Explore module button"
+  },
+  "homepage.journey.title": {
+    "message": "سیکھنے سے تخلیق تک",
+    "description": "Learning journey section title"
+  },
+  "homepage.journey.description": {
+    "message": "Physical AI کے تصورات سیکھیں، اپنا ہیومنائڈ روبوٹ بنائیں، اور اسے زندہ کریں!",
+    "description": "Learning journey description"
+  },
+  "homepage.journey.imageAlt": {
+    "message": "اینیمیشن جو مکمل سفر دکھاتی ہے: انسان Physical AI کتاب سے سیکھتا ہے، ROS2، Gazebo، Isaac، اور VLA کا علم حاصل کرتا ہے، پھر ہیومنائڈ روبوٹ بناتا ہے جو زندہ ہو کر خودمختاری سے کام کرتا ہے",
+    "description": "Learning journey animation alt text"
+  },
+  "homepage.modules.title": {
+    "message": "کورس ماڈیولز",
+    "description": "Course modules section title"
+  },
+  "homepage.module1.title": {
+    "message": "ماڈیول 1: ROS2 بنیادیات",
+    "description": "Module 1 title"
+  },
+  "homepage.module1.description": {
+    "message": "روبوٹ آپریٹنگ سسٹم 2 میں مہارت حاصل کریں - نوڈز، ٹاپکس، سروسز، ایکشنز، اور rclpy کے ساتھ Python انٹیگریشن۔",
+    "description": "Module 1 description"
+  },
+  "homepage.module2.title": {
+    "message": "ماڈیول 2: روبوٹ سمیولیشن",
+    "description": "Module 2 title"
+  },
+  "homepage.module2.description": {
+    "message": "Gazebo سمیولیشن، فزکس انجنز، سینسر ماڈلنگ، اور URDF روبوٹ ڈسکرپشنز سیکھیں۔",
+    "description": "Module 2 description"
+  },
+  "homepage.module3.title": {
+    "message": "ماڈیول 3: NVIDIA Isaac",
+    "description": "Module 3 title"
+  },
+  "homepage.module3.description": {
+    "message": "Isaac Sim، Isaac ROS، فوٹو ریئلسٹک سمیولیشن، اور ایج ڈیپلائمنٹ کے ساتھ GPU ایکسلریٹڈ روبوٹکس۔",
+    "description": "Module 3 description"
+  },
+  "homepage.module4.title": {
+    "message": "ماڈیول 4: VLA ماڈلز",
+    "description": "Module 4 title"
+  },
+  "homepage.module4.description": {
+    "message": "ویژن-لینگویج-ایکشن ماڈلز، وائس کمانڈز، LLM انٹیگریشن، اور قدرتی زبان روبوٹ کنٹرول۔",
+    "description": "Module 4 description"
+  },
+  "homepage.feature1.title": {
+    "message": "صنعتی معیاری ٹولز",
+    "description": "Feature 1 title"
+  },
+  "homepage.feature1.description": {
+    "message": "ROS2 سیکھیں، جدید روبوٹکس کی بنیاد جو دنیا بھر کی کمپنیاں استعمال کرتی ہیں۔ آزمودہ فریم ورکس کے ساتھ حقیقی روبوٹ ایپلیکیشنز بنائیں۔",
+    "description": "Feature 1 description"
+  },
+  "homepage.feature2.title": {
+    "message": "GPU ایکسلریٹڈ سمیولیشن",
+    "description": "Feature 2 title"
+  },
+  "homepage.feature2.description": {
+    "message": "فوٹو ریئلسٹک سمیولیشن، سنتھیٹک ڈیٹا جنریشن، اور ہموار سم-ٹو-ریئل ٹرانسفر کے لیے NVIDIA Isaac Sim میں مہارت حاصل کریں۔",
+    "description": "Feature 2 description"
+  },
+  "homepage.feature3.title": {
+    "message": "جدید ترین AI",
+    "description": "Feature 3 title"
+  },
+  "homepage.feature3.description": {
+    "message": "قدرتی زبان کمانڈز اور ملٹی موڈل سمجھ کے ساتھ روبوٹس کنٹرول کرنے کے لیے ویژن-لینگویج-ایکشن ماڈلز نافذ کریں۔",
+    "description": "Feature 3 description"
+  },
   "theme.common.skipToMainContent": {
     "message": "مرکزی مواد پر جائیں",
     "description": "Skip to main content"
