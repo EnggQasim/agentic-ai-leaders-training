@@ -148,34 +148,42 @@ async def get_google_auth_url(
     return AuthUrlResponse(url=url, provider="google")
 
 
-@router.get("/github/callback")
+class AuthCallbackResponse(BaseModel):
+    """OAuth callback response with token and user."""
+    access_token: str
+    token_type: str = "bearer"
+    user: UserInfo
+
+
+@router.get("/github/callback", response_model=AuthCallbackResponse)
 async def github_callback(
     code: str,
     state: Optional[str] = None,
     redirect_uri: str = "http://localhost:3000/auth/callback"
-) -> Response:
+) -> AuthCallbackResponse:
     """
     Handle GitHub OAuth callback.
 
-    Exchanges code for token, creates user/session, returns JWT in cookie.
+    Exchanges code for token, creates user/session, returns JWT token.
     """
     auth_service = get_auth_service()
 
     try:
         result = await auth_service.handle_github_callback(code, redirect_uri)
 
-        # Create response with auth cookie
-        response = RedirectResponse(url=redirect_uri.replace("/auth/callback", "/"))
-        response.set_cookie(
-            key="auth_token",
-            value=result["token"],
-            httponly=True,
-            secure=True,
-            samesite="lax",
-            max_age=60 * 60 * 24 * 7  # 7 days
+        user = result["user"]
+        return AuthCallbackResponse(
+            access_token=result["token"],
+            user=UserInfo(
+                user_id=user["user_id"],
+                email=user.get("email"),
+                name=user.get("name"),
+                avatar_url=user.get("avatar_url"),
+                provider=user.get("provider"),
+                created_at=user.get("created_at"),
+                last_login=user.get("last_login")
+            )
         )
-
-        return response
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
