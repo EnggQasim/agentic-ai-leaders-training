@@ -4,5 +4,6 @@ from .health import router as health_router
 from .diagram import router as diagram_router
 from .podcast import router as podcast_router
 from .auth import router as auth_router
+from .personalization import router as personalization_router
 
-__all__ = ["chat_router", "health_router", "diagram_router", "podcast_router", "auth_router"]
+__all__ = ["chat_router", "health_router", "diagram_router", "podcast_router", "auth_router", "personalization_router"]

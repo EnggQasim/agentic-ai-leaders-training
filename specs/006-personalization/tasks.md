@@ -18,8 +18,8 @@
 | US2: Difficulty | 2 tasks |
 | US3: Recommendations | 2 tasks |
 | US4: Progress | 1 task |
-| **Completed** | **0 tasks** |
-| **Remaining** | **20 tasks** |
+| **Completed** | **8 tasks** |
+| **Remaining** | **15 tasks** |
 
 ## User Story Mapping
 
@@ -35,11 +35,11 @@
 
 ## Phase 1: Setup
 
-> Project initialization and dependencies
+> Project initialization and dependencies (using in-memory storage, upgradable to PostgreSQL)
 
-- [ ] T001 Create user preferences database table
-- [ ] T002 Create reading progress database table
-- [ ] T003 Create personalized content variations table
+- [X] T001 Create user preferences storage (in-memory dict)
+- [X] T002 Create reading progress storage (in-memory dict)
+- [X] T003 Create simplified content cache (in-memory dict)
 
 ---
 
@@ -47,11 +47,11 @@
 
 > Personalization service implementation
 
-- [ ] T004 Create Pydantic schemas for preferences and progress
-- [ ] T005 Implement user preferences API endpoints
-- [ ] T006 Implement reading progress tracking API
-- [ ] T007 Create recommendation engine service
-- [ ] T008 Implement simplified content generation (GPT-4o)
+- [X] T004 Create Pydantic schemas for preferences and progress
+- [X] T005 Implement user preferences API endpoints
+- [X] T006 Implement reading progress tracking API
+- [X] T007 Create recommendation engine service
+- [X] T008 Implement simplified content generation (GPT-4o)
 
 ---
 
