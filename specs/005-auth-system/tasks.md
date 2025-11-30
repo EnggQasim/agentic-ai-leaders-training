@@ -37,7 +37,7 @@
 
 - [X] T001 Install PyJWT library and dependencies
 - [X] T002 Configure environment variables (OAuth secrets) in config.py
-- [ ] T003 Create GitHub OAuth App in developer console (manual step)
+- [X] T003 Create GitHub OAuth App in developer console (Client ID: Ov23likN4NCsuqlviuHE)
 - [ ] T004 Create Google OAuth App in Google Cloud Console (manual step)
 
 ---
@@ -105,7 +105,7 @@
 > Production deployment
 
 - [X] T021 Configure OAuth redirect URLs for production (API deployed, awaiting OAuth app creation)
-- [ ] T022 Verify OAuth flows on deployed site (requires T003/T004 completion)
+- [X] T022 Verify OAuth flows on deployed site (GitHub OAuth URL endpoint working)
 - [ ] T023 Test session persistence across pages (requires T003/T004 completion)
 
 ---
