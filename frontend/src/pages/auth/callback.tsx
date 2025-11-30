@@ -33,9 +33,12 @@ export default function AuthCallback(): JSX.Element {
       }
 
       try {
+        // The redirect_uri must match what was used in the initial auth request
+        const redirectUri = window.location.origin + '/physical-ai-robotics-textbook/auth/callback';
+
         // Exchange code for token via backend
         const response = await fetch(
-          `${API_URL}/api/auth/github/callback?code=${code}&state=${state || ''}`,
+          `${API_URL}/api/auth/github/callback?code=${code}&state=${state || ''}&redirect_uri=${encodeURIComponent(redirectUri)}`,
           {
             method: 'GET',
             credentials: 'include',
