@@ -92,6 +92,7 @@ export default function PodcastPlayer({
   // Personalization state
   const [showPersonalization, setShowPersonalization] = useState(false);
   const [personalizationOptions, setPersonalizationOptions] = useState<PersonalizationOptions | null>(null);
+  const [optionsLoading, setOptionsLoading] = useState(true);
   const [selectedRole, setSelectedRole] = useState('student');
   const [selectedLevel, setSelectedLevel] = useState('intermediate');
   const [expertAVoice, setExpertAVoice] = useState('mabel');
@@ -103,6 +104,7 @@ export default function PodcastPlayer({
   // Load personalization options
   useEffect(() => {
     const fetchOptions = async () => {
+      setOptionsLoading(true);
       try {
         const response = await fetch(`${API_URL}/api/podcast/personalization-options`);
         if (response.ok) {
@@ -121,8 +123,10 @@ export default function PodcastPlayer({
             setExpertBVoice(roleConfig.default_voices.expert_b || 'chadwick');
           }
         }
-      } catch {
-        // Use defaults
+      } catch (err) {
+        console.error('Failed to fetch personalization options:', err);
+      } finally {
+        setOptionsLoading(false);
       }
     };
     fetchOptions();
@@ -321,7 +325,32 @@ export default function PodcastPlayer({
         </button>
       )}
 
-      {showPersonalization && personalizationOptions && (
+      {showPersonalization && optionsLoading && (
+        <div className={styles.personalizationPanel}>
+          <div className={styles.loadingContainer}>
+            <div className={styles.spinner} />
+            <span>Loading voice options...</span>
+          </div>
+        </div>
+      )}
+
+      {showPersonalization && !optionsLoading && !personalizationOptions && (
+        <div className={styles.personalizationPanel}>
+          <div className={styles.errorContainer}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span>Failed to load voice options</span>
+            <button className={styles.retryButton} onClick={() => window.location.reload()}>
+              Retry
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showPersonalization && !optionsLoading && personalizationOptions && (
         <div className={styles.personalizationPanel}>
           <h4 className={styles.panelTitle}>Customize Your Podcast</h4>
           <p className={styles.panelDesc}>
