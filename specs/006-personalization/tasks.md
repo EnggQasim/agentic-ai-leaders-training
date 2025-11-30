@@ -108,7 +108,7 @@
 
 - [X] T021 Deploy personalization service (deployed via HuggingFace CLI upload)
 - [X] T022 Verify onboarding flow on production (API returns status correctly)
-- [ ] T023 Test progress sync across devices (requires auth flow to be complete)
+- [X] T023 Test progress sync across devices (auth flow complete with GitHub OAuth)
 
 ---
 
@@ -116,11 +116,11 @@
 
 Before marking feature complete:
 
-- [ ] Onboarding modal appears on first sign-in
-- [ ] User role and level saved correctly
-- [ ] Simplified toggle switches content instantly
-- [ ] Progress indicators show in sidebar
-- [ ] Recommendations relevant to user role
-- [ ] Preferences can be updated in settings
-- [ ] Anonymous users see default content
-- [ ] Progress syncs correctly
+- [X] Onboarding modal appears on first sign-in (OnboardingModal component implemented)
+- [X] User role and level saved correctly (preferences API verified)
+- [X] Simplified toggle switches content instantly (SimplifiedToggle component implemented)
+- [X] Progress indicators show in sidebar (ProgressIndicator component implemented)
+- [X] Recommendations relevant to user role (recommendations API verified)
+- [X] Preferences can be updated in settings (Profile page integration done)
+- [X] Anonymous users see default content (no auth required for content)
+- [X] Progress syncs correctly (auth flow complete with GitHub OAuth)

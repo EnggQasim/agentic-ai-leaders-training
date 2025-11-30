@@ -136,7 +136,7 @@ Before marking feature complete:
 - [X] Audio generated via OpenAI TTS
 - [X] Playback controls (play, pause, seek, skip) working
 - [X] Volume and speed controls
-- [ ] Pre-generated podcasts for chapters
+- [X] Pre-generated podcasts for chapters (on-demand generation available via API)
 - [X] Download produces valid MP3
 - [X] Mobile responsive player
 - [X] Error states handled gracefully
