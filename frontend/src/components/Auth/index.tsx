@@ -91,6 +91,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }): JSX.E
     // Use the base URL from Docusaurus config (handles both dev and prod)
     const baseUrl = window.location.origin + '/physical-ai-robotics-textbook';
     const redirectUri = `${baseUrl}/auth/callback`;
+
+    // Store provider for callback detection
+    localStorage.setItem('oauth_provider', 'google');
+
     const response = await fetch(
       `${API_URL}/api/auth/google/url?redirect_uri=${encodeURIComponent(redirectUri)}`
     );

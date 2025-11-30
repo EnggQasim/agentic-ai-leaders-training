@@ -3,6 +3,39 @@ import Layout from '@theme/Layout';
 
 const API_URL = 'https://mqasim077-physical-ai-textbook-api.hf.space';
 
+// Detect provider from URL parameters
+function detectProvider(params: URLSearchParams): 'github' | 'google' {
+  // Google OAuth includes 'scope' parameter with google-specific scopes
+  const scope = params.get('scope');
+  if (scope && (scope.includes('googleapis.com') || scope.includes('userinfo'))) {
+    return 'google';
+  }
+
+  // Check if state contains provider hint (if we set it)
+  const state = params.get('state');
+  if (state) {
+    try {
+      // Try to decode if it's a JWT or base64
+      const decoded = atob(state);
+      if (decoded.includes('google')) return 'google';
+      if (decoded.includes('github')) return 'github';
+    } catch {
+      // Not base64, check raw state
+      if (state.includes('google')) return 'google';
+    }
+  }
+
+  // Default to checking stored provider preference
+  const storedProvider = localStorage.getItem('oauth_provider');
+  if (storedProvider === 'google') {
+    localStorage.removeItem('oauth_provider');
+    return 'google';
+  }
+
+  // Default to github
+  return 'github';
+}
+
 export default function AuthCallback(): JSX.Element {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [errorMessage, setErrorMessage] = useState('');
@@ -33,17 +66,21 @@ export default function AuthCallback(): JSX.Element {
       }
 
       try {
+        // Detect which OAuth provider was used
+        const provider = detectProvider(params);
+
         // The redirect_uri must match what was used in the initial auth request
         const redirectUri = window.location.origin + '/physical-ai-robotics-textbook/auth/callback';
 
-        // Exchange code for token via backend
-        const response = await fetch(
-          `${API_URL}/api/auth/github/callback?code=${code}&state=${state || ''}&redirect_uri=${encodeURIComponent(redirectUri)}`,
-          {
-            method: 'GET',
-            credentials: 'include',
-          }
-        );
+        // Exchange code for token via backend - use correct provider endpoint
+        const callbackUrl = provider === 'google'
+          ? `${API_URL}/api/auth/google/callback?code=${code}&state=${state || ''}&redirect_uri=${encodeURIComponent(redirectUri)}`
+          : `${API_URL}/api/auth/github/callback?code=${code}&state=${state || ''}&redirect_uri=${encodeURIComponent(redirectUri)}`;
+
+        const response = await fetch(callbackUrl, {
+          method: 'GET',
+          credentials: 'include',
+        });
 
         if (!response.ok) {
           const data = await response.json();

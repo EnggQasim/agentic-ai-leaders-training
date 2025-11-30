@@ -189,34 +189,35 @@ async def github_callback(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/google/callback")
+@router.get("/google/callback", response_model=AuthCallbackResponse)
 async def google_callback(
     code: str,
     state: Optional[str] = None,
     redirect_uri: str = "http://localhost:3000/auth/callback"
-) -> Response:
+) -> AuthCallbackResponse:
     """
     Handle Google OAuth callback.
 
-    Exchanges code for token, creates user/session, returns JWT in cookie.
+    Exchanges code for token, creates user/session, returns JWT token.
     """
     auth_service = get_auth_service()
 
     try:
         result = await auth_service.handle_google_callback(code, redirect_uri)
 
-        # Create response with auth cookie
-        response = RedirectResponse(url=redirect_uri.replace("/auth/callback", "/"))
-        response.set_cookie(
-            key="auth_token",
-            value=result["token"],
-            httponly=True,
-            secure=True,
-            samesite="lax",
-            max_age=60 * 60 * 24 * 7  # 7 days
+        user = result["user"]
+        return AuthCallbackResponse(
+            access_token=result["token"],
+            user=UserInfo(
+                user_id=user["user_id"],
+                email=user.get("email"),
+                name=user.get("name"),
+                avatar_url=user.get("avatar_url"),
+                provider=user.get("provider"),
+                created_at=user.get("created_at"),
+                last_login=user.get("last_login")
+            )
         )
-
-        return response
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
