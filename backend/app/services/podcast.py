@@ -301,6 +301,88 @@ Generate the debate-style podcast script:"""
         # Combine audio chunks (simple concatenation for MP3)
         return b''.join(audio_chunks)
 
+    async def generate_multi_voice_audio(
+        self,
+        script: str,
+        voice_a: str = "onyx",
+        voice_b: str = "nova"
+    ) -> bytes:
+        """
+        Generate multi-voice conversation audio using OpenAI TTS.
+
+        Parses script for EXPERT_A:/EXPERT_B: or HOST:/EXPERT: prefixes
+        and generates each segment with the appropriate voice.
+
+        Args:
+            script: Script with speaker prefixes (EXPERT_A:/EXPERT_B: or HOST:/EXPERT:)
+            voice_a: Voice for first speaker (default: onyx - deep male)
+            voice_b: Voice for second speaker (default: nova - female)
+
+        Returns:
+            Combined audio data as bytes (MP3)
+        """
+        import re
+
+        # Parse script into segments with speaker labels
+        # Match patterns like "EXPERT_A:", "EXPERT_B:", "HOST:", "EXPERT:"
+        pattern = r'(EXPERT_A|EXPERT_B|HOST|EXPERT):\s*'
+
+        # Split by speaker markers
+        parts = re.split(pattern, script)
+
+        segments = []
+        current_speaker = None
+
+        for part in parts:
+            part = part.strip()
+            if not part:
+                continue
+            if part in ['EXPERT_A', 'HOST']:
+                current_speaker = 'A'
+            elif part in ['EXPERT_B', 'EXPERT']:
+                current_speaker = 'B'
+            elif current_speaker:
+                segments.append({
+                    'speaker': current_speaker,
+                    'text': part
+                })
+
+        if not segments:
+            # Fallback: no speaker markers found, use single voice
+            return await self.generate_audio(script, voice_a)
+
+        # Generate audio for each segment
+        audio_chunks = []
+        MAX_CHARS = 4000
+
+        for segment in segments:
+            voice = voice_a if segment['speaker'] == 'A' else voice_b
+            text = segment['text'].strip()
+
+            if not text:
+                continue
+
+            # Handle long segments by chunking
+            if len(text) > MAX_CHARS:
+                text_chunks = self._chunk_text(text, MAX_CHARS)
+                for chunk in text_chunks:
+                    response = self.client.audio.speech.create(
+                        model="tts-1",
+                        voice=voice,
+                        input=chunk
+                    )
+                    audio_chunks.append(response.content)
+            else:
+                response = self.client.audio.speech.create(
+                    model="tts-1",
+                    voice=voice,
+                    input=text
+                )
+                audio_chunks.append(response.content)
+
+        # Combine all audio chunks
+        return b''.join(audio_chunks)
+
     def _chunk_text(self, text: str, max_chars: int) -> List[str]:
         """
         Split text into chunks at sentence boundaries.
@@ -417,8 +499,13 @@ Generate the debate-style podcast script:"""
                 )
                 file_ext = "wav"  # Higgs returns WAV
             else:
-                # Default to OpenAI TTS
-                audio_data = await self.generate_audio(script, voice="alloy")
+                # Default to OpenAI TTS with multi-voice conversation
+                # Use onyx (deep male) for HOST and nova (female) for EXPERT
+                audio_data = await self.generate_multi_voice_audio(
+                    script,
+                    voice_a="onyx",  # HOST voice
+                    voice_b="nova"   # EXPERT voice
+                )
                 file_ext = "mp3"
 
             # Step 3: Save audio file
@@ -582,10 +669,17 @@ Generate the debate-style podcast script:"""
 
                 file_ext = "wav"
             except Exception as higgs_error:
-                print(f"Higgs Audio failed, falling back to OpenAI: {higgs_error}")
-                # Fallback to OpenAI TTS with the full script
-                clean_script = script.replace("EXPERT_A:", "").replace("EXPERT_B:", "")
-                audio_data = await self.generate_audio(clean_script, voice="alloy")
+                print(f"Higgs Audio failed, falling back to OpenAI multi-voice: {higgs_error}")
+                # Fallback to OpenAI TTS with multi-voice conversation
+                # Map role to OpenAI voice pairs
+                openai_voice_map = {
+                    "student": ("echo", "nova"),      # Friendly male + female
+                    "researcher": ("onyx", "alloy"),  # Deep male + neutral
+                    "engineer": ("fable", "shimmer"), # British male + expressive female
+                    "hobbyist": ("echo", "nova")      # Friendly voices
+                }
+                voice_a, voice_b = openai_voice_map.get(user_role, ("onyx", "nova"))
+                audio_data = await self.generate_multi_voice_audio(script, voice_a, voice_b)
                 file_ext = "mp3"
 
             # Step 3: Save audio file
