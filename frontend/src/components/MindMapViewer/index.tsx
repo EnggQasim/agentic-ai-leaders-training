@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import ReactFlow, {
   Node,
   Edge,
@@ -8,8 +8,6 @@ import ReactFlow, {
   BackgroundVariant,
   useNodesState,
   useEdgesState,
-  useReactFlow,
-  ReactFlowProvider,
   NodeTypes,
   getNodesBounds,
   getViewportForBounds,
@@ -66,7 +64,7 @@ const API_URL = process.env.NODE_ENV === 'development'
   ? 'http://localhost:8000'
   : 'https://mqasim077-physical-ai-textbook-api.hf.space';
 
-// Define custom node types
+// Define custom node types outside component to prevent re-creation
 const nodeTypes: NodeTypes = {
   mindmapNode: MindMapNode,
 };
@@ -103,7 +101,7 @@ function convertToReactFlowNodes(mindmap: MindMapData): { nodes: Node[]; edges: 
     target: edge.target,
     type: 'smoothstep',
     animated: false,
-    style: { stroke: 'var(--ifm-color-emphasis-400)', strokeWidth: 2 },
+    style: { stroke: '#9ca3af', strokeWidth: 2 },
   }));
 
   return getLayoutedElements(nodes, edges, 'TB');
@@ -171,7 +169,7 @@ export default function MindMapViewer({
   }, [chapterId, chapterContent, chapterTitle, setNodes, setEdges]);
 
   // Auto-fetch on mount if not loaded
-  React.useEffect(() => {
+  useEffect(() => {
     if (!hasLoaded && !isLoading && chapterContent.length > 100) {
       fetchMindMap();
     }
@@ -363,12 +361,13 @@ export default function MindMapViewer({
           onNodeDoubleClick={handleNodeDoubleClick}
           nodeTypes={nodeTypes}
           fitView
-          fitViewOptions={{ padding: 0.2 }}
-          minZoom={0.5}
+          fitViewOptions={{ padding: 0.3 }}
+          minZoom={0.3}
           maxZoom={2}
           proOptions={proOptions}
+          defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
         >
-          <Background variant={BackgroundVariant.Dots} gap={16} size={1} />
+          <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="#e5e7eb" />
           <Controls showInteractive={false} />
           <MiniMap
             nodeColor={(node) => {
@@ -378,6 +377,7 @@ export default function MindMapViewer({
               return '#6b7280';
             }}
             maskColor="rgba(0, 0, 0, 0.1)"
+            style={{ backgroundColor: '#f9fafb' }}
           />
         </ReactFlow>
       </div>
