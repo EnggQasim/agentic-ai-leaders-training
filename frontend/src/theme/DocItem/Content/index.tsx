@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import clsx from 'clsx';
 import { ThemeClassNames } from '@docusaurus/theme-common';
 import { useDoc } from '@docusaurus/plugin-content-docs/client';
@@ -9,19 +9,6 @@ import PodcastPlayer from '@site/src/components/PodcastPlayer';
 import SummaryPanel from '@site/src/components/SummaryPanel';
 import MindMapViewer from '@site/src/components/MindMapViewer';
 import styles from './styles.module.css';
-
-// Extract text content from MDX children for AI features
-function extractTextContent(children: React.ReactNode): string {
-  let text = '';
-  React.Children.forEach(children, (child) => {
-    if (typeof child === 'string') {
-      text += child;
-    } else if (React.isValidElement(child) && child.props.children) {
-      text += extractTextContent(child.props.children);
-    }
-  });
-  return text.slice(0, 8000); // Limit to 8000 chars for AI processing
-}
 
 function useSyntheticTitle(): string | null {
   const { metadata, frontMatter, contentTitle } = useDoc();
@@ -39,15 +26,25 @@ export default function DocItemContent({ children }: Props): JSX.Element {
   const syntheticTitle = useSyntheticTitle();
   const { metadata, frontMatter } = useDoc();
   const [activeTab, setActiveTab] = useState<TabType>('content');
+  const [chapterContent, setChapterContent] = useState<string>('');
+  const contentRef = useRef<HTMLDivElement>(null);
 
   // Generate chapter ID from the doc path
   const chapterId = metadata.id.replace(/\//g, '-');
   const chapterTitle = metadata.title;
 
-  // Extract content for AI features
-  const chapterContent = typeof children === 'string'
-    ? children
-    : extractTextContent(children);
+  // Extract content from DOM after render
+  useEffect(() => {
+    if (contentRef.current) {
+      const text = contentRef.current.innerText || contentRef.current.textContent || '';
+      // Clean up and limit content
+      const cleanedText = text
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, 8000);
+      setChapterContent(cleanedText);
+    }
+  }, [children]);
 
   // Navigate from mind map node to content section
   const handleNavigateToSection = useCallback((anchor: string) => {
@@ -137,11 +134,15 @@ export default function DocItemContent({ children }: Props): JSX.Element {
 
       {/* Tab Panels */}
       <div className={styles.tabPanels}>
-        {activeTab === 'content' && (
-          <div role="tabpanel" className={styles.tabPanel}>
-            <MDXContent>{children}</MDXContent>
-          </div>
-        )}
+        {/* Content tab - always render but hide when not active (for DOM text extraction) */}
+        <div
+          role="tabpanel"
+          className={styles.tabPanel}
+          style={{ display: activeTab === 'content' ? 'block' : 'none' }}
+          ref={contentRef}
+        >
+          <MDXContent>{children}</MDXContent>
+        </div>
 
         {activeTab === 'summary' && (
           <div role="tabpanel" className={styles.tabPanel}>
