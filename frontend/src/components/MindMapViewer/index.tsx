@@ -60,6 +60,12 @@ interface MindMapResponse {
   error?: string;
 }
 
+interface SelectedNodeInfo {
+  id: string;
+  label: string;
+  description: string;
+}
+
 const API_URL = process.env.NODE_ENV === 'development'
   ? 'http://localhost:8000'
   : 'https://mqasim077-physical-ai-textbook-api.hf.space';
@@ -69,40 +75,69 @@ const nodeTypes: NodeTypes = {
   mindmapNode: MindMapNode,
 };
 
-function convertToReactFlowNodes(mindmap: MindMapData): { nodes: Node[]; edges: Edge[] } {
+function convertToReactFlowNodes(
+  mindmap: MindMapData,
+  collapsedNodes: Set<string>,
+  onToggleCollapse: (nodeId: string) => void,
+  onNodeClick: (nodeId: string, label: string, description: string) => void
+): { nodes: Node[]; edges: Edge[] } {
   // Collect all nodes including central topic
   const allNodes: MindMapNodeData[] = [mindmap.central_topic, ...mindmap.nodes];
 
-  // Count children for each node
-  const childCounts: Record<string, number> = {};
+  // Build parent-child map
+  const childrenMap: Record<string, string[]> = {};
   allNodes.forEach(node => {
     if (node.parent_id) {
-      childCounts[node.parent_id] = (childCounts[node.parent_id] || 0) + 1;
+      if (!childrenMap[node.parent_id]) {
+        childrenMap[node.parent_id] = [];
+      }
+      childrenMap[node.parent_id].push(node.id);
     }
   });
 
+  // Find hidden nodes (children of collapsed nodes)
+  const hiddenNodes = new Set<string>();
+  const hideChildren = (parentId: string) => {
+    const children = childrenMap[parentId] || [];
+    children.forEach(childId => {
+      hiddenNodes.add(childId);
+      hideChildren(childId);
+    });
+  };
+  collapsedNodes.forEach(nodeId => hideChildren(nodeId));
+
+  // Filter out hidden nodes
+  const visibleNodes = allNodes.filter(n => !hiddenNodes.has(n.id));
+
   // Convert to React Flow format
-  const nodes: Node[] = allNodes.map((node) => ({
+  const nodes: Node[] = visibleNodes.map((node) => ({
     id: node.id,
     type: 'mindmapNode',
     data: {
       label: node.label,
       description: node.description,
       level: node.level,
-      hasChildren: (childCounts[node.id] || 0) > 0,
+      hasChildren: (childrenMap[node.id] || []).length > 0,
       contentAnchor: node.content_anchor,
+      collapsed: collapsedNodes.has(node.id),
+      onToggleCollapse,
+      onNodeClick,
     },
-    position: { x: 0, y: 0 }, // Will be set by layout
+    position: { x: 0, y: 0 },
   }));
 
-  const edges: Edge[] = mindmap.edges.map((edge) => ({
-    id: edge.id,
-    source: edge.source,
-    target: edge.target,
-    type: 'default', // Bezier curves for organic look
-    animated: false,
-    style: { stroke: '#9ca3af', strokeWidth: 3 },
-  }));
+  // Filter edges to only include visible nodes
+  const visibleNodeIds = new Set(visibleNodes.map(n => n.id));
+  const edges: Edge[] = mindmap.edges
+    .filter(edge => visibleNodeIds.has(edge.source) && visibleNodeIds.has(edge.target))
+    .map((edge) => ({
+      id: edge.id,
+      source: edge.source,
+      target: edge.target,
+      type: 'default',
+      animated: false,
+      style: { stroke: '#9ca3af', strokeWidth: 2 },
+    }));
 
   return getLayoutedElements(nodes, edges, 'TB');
 }
@@ -121,8 +156,80 @@ export default function MindMapViewer({
   const [hasLoaded, setHasLoaded] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [mindmapInfo, setMindmapInfo] = useState<{ nodeCount: number; generatedAt: string } | null>(null);
+  const [mindmapData, setMindmapData] = useState<MindMapData | null>(null);
+  const [collapsedNodes, setCollapsedNodes] = useState<Set<string>>(new Set());
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [selectedNode, setSelectedNode] = useState<SelectedNodeInfo | null>(null);
 
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Toggle collapse for a single node
+  const handleToggleCollapse = useCallback((nodeId: string) => {
+    setCollapsedNodes(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(nodeId)) {
+        newSet.delete(nodeId);
+      } else {
+        newSet.add(nodeId);
+      }
+      return newSet;
+    });
+  }, []);
+
+  // Handle node click - show details panel
+  const handleNodeClick = useCallback((nodeId: string, label: string, description: string) => {
+    setSelectedNode({ id: nodeId, label, description });
+  }, []);
+
+  // Expand all nodes
+  const handleExpandAll = useCallback(() => {
+    setCollapsedNodes(new Set());
+  }, []);
+
+  // Collapse all level 1 nodes
+  const handleCollapseAll = useCallback(() => {
+    if (mindmapData) {
+      const level1Ids = mindmapData.nodes
+        .filter(n => n.level === 1)
+        .map(n => n.id);
+      setCollapsedNodes(new Set(level1Ids));
+    }
+  }, [mindmapData]);
+
+  // Toggle fullscreen
+  const handleToggleFullscreen = useCallback(() => {
+    if (!document.fullscreenElement && containerRef.current) {
+      containerRef.current.requestFullscreen();
+      setIsFullscreen(true);
+    } else if (document.exitFullscreen) {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  }, []);
+
+  // Listen for fullscreen changes
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  // Re-layout when collapsed nodes change
+  useEffect(() => {
+    if (mindmapData) {
+      const { nodes: layoutedNodes, edges: layoutedEdges } = convertToReactFlowNodes(
+        mindmapData,
+        collapsedNodes,
+        handleToggleCollapse,
+        handleNodeClick
+      );
+      setNodes(layoutedNodes);
+      setEdges(layoutedEdges);
+    }
+  }, [collapsedNodes, mindmapData, setNodes, setEdges, handleToggleCollapse, handleNodeClick]);
 
   const fetchMindMap = useCallback(async (forceRegenerate: boolean = false) => {
     setIsLoading(true);
@@ -149,7 +256,13 @@ export default function MindMapViewer({
       const data: MindMapResponse = await response.json();
 
       if (data.success && data.mindmap) {
-        const { nodes: layoutedNodes, edges: layoutedEdges } = convertToReactFlowNodes(data.mindmap);
+        setMindmapData(data.mindmap);
+        const { nodes: layoutedNodes, edges: layoutedEdges } = convertToReactFlowNodes(
+          data.mindmap,
+          collapsedNodes,
+          handleToggleCollapse,
+          handleNodeClick
+        );
         setNodes(layoutedNodes);
         setEdges(layoutedEdges);
         setIsCached(data.cached);
@@ -166,7 +279,7 @@ export default function MindMapViewer({
     } finally {
       setIsLoading(false);
     }
-  }, [chapterId, chapterContent, chapterTitle, setNodes, setEdges]);
+  }, [chapterId, chapterContent, chapterTitle, setNodes, setEdges, collapsedNodes, handleToggleCollapse, handleNodeClick]);
 
   // Auto-fetch on mount if not loaded
   useEffect(() => {
@@ -176,6 +289,8 @@ export default function MindMapViewer({
   }, [hasLoaded, isLoading, chapterContent, fetchMindMap]);
 
   const handleRegenerate = () => {
+    setCollapsedNodes(new Set());
+    setSelectedNode(null);
     fetchMindMap(true);
   };
 
@@ -184,12 +299,10 @@ export default function MindMapViewer({
 
     setIsExporting(true);
     try {
-      // Calculate bounds of all nodes
       const nodesBounds = getNodesBounds(nodes);
       const imageWidth = 1920;
       const imageHeight = 1080;
 
-      // Get viewport that fits all nodes
       const viewport = getViewportForBounds(
         nodesBounds,
         imageWidth,
@@ -199,16 +312,12 @@ export default function MindMapViewer({
         0.2
       );
 
-      // Find the viewport element and apply the calculated transform
       const viewportElement = reactFlowWrapper.current.querySelector('.react-flow__viewport') as HTMLElement;
       if (!viewportElement) {
         throw new Error('Could not find mind map viewport');
       }
 
-      // Store original transform
       const originalTransform = viewportElement.style.transform;
-
-      // Apply the calculated viewport transform for export
       viewportElement.style.transform = `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`;
 
       const dataUrl = await toPng(viewportElement, {
@@ -222,7 +331,6 @@ export default function MindMapViewer({
         },
       });
 
-      // Restore original transform
       viewportElement.style.transform = originalTransform;
 
       const link = document.createElement('a');
@@ -300,7 +408,7 @@ export default function MindMapViewer({
   }
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${isFullscreen ? styles.fullscreen : ''}`} ref={containerRef}>
       <div className={styles.header}>
         <div className={styles.headerLeft}>
           <h3 className={styles.title}>Mind Map</h3>
@@ -319,11 +427,58 @@ export default function MindMapViewer({
           )}
         </div>
         <div className={styles.headerActions}>
+          {/* Expand/Collapse All buttons */}
+          <button
+            className={styles.toolbarButton}
+            onClick={handleExpandAll}
+            title="Expand all branches"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="15 3 21 3 21 9" />
+              <polyline points="9 21 3 21 3 15" />
+              <line x1="21" y1="3" x2="14" y2="10" />
+              <line x1="3" y1="21" x2="10" y2="14" />
+            </svg>
+          </button>
+          <button
+            className={styles.toolbarButton}
+            onClick={handleCollapseAll}
+            title="Collapse all branches"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="4 14 10 14 10 20" />
+              <polyline points="20 10 14 10 14 4" />
+              <line x1="14" y1="10" x2="21" y2="3" />
+              <line x1="3" y1="21" x2="10" y2="14" />
+            </svg>
+          </button>
+          <div className={styles.divider} />
+          <button
+            className={styles.toolbarButton}
+            onClick={handleToggleFullscreen}
+            title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+          >
+            {isFullscreen ? (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="4 14 10 14 10 20" />
+                <polyline points="20 10 14 10 14 4" />
+                <line x1="14" y1="10" x2="21" y2="3" />
+                <line x1="3" y1="21" x2="10" y2="14" />
+              </svg>
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="15 3 21 3 21 9" />
+                <polyline points="9 21 3 21 3 15" />
+                <polyline points="21 3 14 10" />
+                <polyline points="3 21 10 14" />
+              </svg>
+            )}
+          </button>
           <button
             className={styles.exportButton}
             onClick={handleExport}
             disabled={isExporting}
-            title="Export as PNG"
+            title="Download as PNG"
           >
             {isExporting ? (
               <div className={styles.smallSpinner} />
@@ -334,7 +489,7 @@ export default function MindMapViewer({
                 <line x1="12" y1="15" x2="12" y2="3" />
               </svg>
             )}
-            Export PNG
+            PNG
           </button>
           <button
             className={styles.regenerateButton}
@@ -347,37 +502,74 @@ export default function MindMapViewer({
               <path d="M3 22v-6h6" />
               <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
             </svg>
-            Regenerate
           </button>
         </div>
       </div>
 
-      <div className={styles.flowContainer} ref={reactFlowWrapper}>
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onNodeDoubleClick={handleNodeDoubleClick}
-          nodeTypes={nodeTypes}
-          fitView
-          fitViewOptions={{ padding: 0.3 }}
-          minZoom={0.3}
-          maxZoom={2}
-          proOptions={proOptions}
-          defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
-        >
-          <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#e5e7eb" />
-          <Controls showInteractive={false} />
-          <MiniMap
-            nodeColor={(node) => {
-              // Use the node's assigned color for minimap
-              return node.data?.color || '#76b900';
-            }}
-            maskColor="rgba(0, 0, 0, 0.08)"
-            style={{ backgroundColor: '#fafafa' }}
-          />
-        </ReactFlow>
+      <div className={styles.mainContent}>
+        <div className={styles.flowContainer} ref={reactFlowWrapper}>
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onNodeDoubleClick={handleNodeDoubleClick}
+            nodeTypes={nodeTypes}
+            fitView
+            fitViewOptions={{ padding: 0.3 }}
+            minZoom={0.2}
+            maxZoom={2}
+            proOptions={proOptions}
+            defaultViewport={{ x: 0, y: 0, zoom: 0.7 }}
+          >
+            <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#e8eaed" />
+            <Controls showInteractive={false} />
+            <MiniMap
+              nodeColor={(node) => node.data?.color || '#1a73e8'}
+              maskColor="rgba(0, 0, 0, 0.08)"
+              style={{ backgroundColor: '#f8f9fa' }}
+            />
+          </ReactFlow>
+        </div>
+
+        {/* Details Panel - NotebookLM style */}
+        {selectedNode && (
+          <div className={styles.detailsPanel}>
+            <div className={styles.detailsHeader}>
+              <h4>{selectedNode.label}</h4>
+              <button
+                className={styles.closeButton}
+                onClick={() => setSelectedNode(null)}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+            <div className={styles.detailsContent}>
+              <p>{selectedNode.description}</p>
+            </div>
+            <div className={styles.detailsActions}>
+              <button
+                className={styles.detailsButton}
+                onClick={() => {
+                  if (onNavigateToSection) {
+                    const anchor = selectedNode.label.toLowerCase().replace(/\s+/g, '-');
+                    onNavigateToSection(anchor);
+                  }
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+                Go to content
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className={styles.footer}>
@@ -387,7 +579,7 @@ export default function MindMapViewer({
             <path d="M12 16v-4" />
             <path d="M12 8h.01" />
           </svg>
-          Hover over nodes for details. Use scroll to zoom, drag to pan.
+          Click nodes to see details • Double-click to navigate • Scroll to zoom
         </span>
         {mindmapInfo && (
           <span className={styles.generatedAt}>
