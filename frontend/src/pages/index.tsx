@@ -34,11 +34,11 @@ function HomepageHeader() {
             minWidth: 200.0,
             scale: 1.0,
             scaleMobile: 1.0,
-            color: 0x76b900,        // NVIDIA green for points
-            backgroundColor: 0x1a4d00, // Darker green background
-            points: 12.0,
-            maxDistance: 22.0,
-            spacing: 18.0,
+            color: 0xffffff,        // White for network lines/points
+            backgroundColor: 0x76b900, // NVIDIA green - matches theme primary
+            points: 10.0,
+            maxDistance: 20.0,
+            spacing: 16.0,
             showDots: true,
           });
           setVantaEffect(effect);
