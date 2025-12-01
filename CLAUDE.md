@@ -212,6 +212,8 @@ See `.specify/memory/constitution.md` for code quality, testing, performance, se
 ## Active Technologies
 - TypeScript/JavaScript (Node.js 18+) + Docusaurus 3.x, React 18, Tailwind CSS (001-docusaurus-book)
 - N/A (static site, content in markdown files) (001-docusaurus-book)
+- Python 3.11 (backend), TypeScript 5.x (frontend) + FastAPI, OpenAI API, React 18, React Flow (mind map visualization) (008-mindmap-summary)
+- JSON file-based caching (following existing podcast/diagram pattern) (008-mindmap-summary)
 
 ## Recent Changes
 - 001-docusaurus-book: Added TypeScript/JavaScript (Node.js 18+) + Docusaurus 3.x, React 18, Tailwind CSS

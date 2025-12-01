@@ -1,0 +1,322 @@
+openapi: 3.0.3
+info:
+  title: Mind Map & Summary API
+  description: API for generating AI-powered summaries and mind maps from chapter content
+  version: 1.0.0
+
+servers:
+  - url: https://mqasim077-physical-ai-textbook-api.hf.space/api
+    description: Production server (HuggingFace Spaces)
+  - url: http://localhost:8000/api
+    description: Development server
+
+paths:
+  /mindmap/summary:
+    post:
+      summary: Generate chapter summary
+      description: Generate an AI-powered summary of chapter content
+      operationId: generateSummary
+      tags:
+        - mindmap
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SummaryRequest'
+      responses:
+        '200':
+          description: Summary generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SummaryResponse'
+        '400':
+          description: Invalid request
+        '500':
+          description: Generation failed
+
+  /mindmap/generate:
+    post:
+      summary: Generate mind map
+      description: Generate an AI-powered mind map structure from chapter content
+      operationId: generateMindMap
+      tags:
+        - mindmap
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MindMapRequest'
+      responses:
+        '200':
+          description: Mind map generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MindMapResponse'
+        '400':
+          description: Invalid request
+        '500':
+          description: Generation failed
+
+  /mindmap/chapter/{chapter_id}:
+    get:
+      summary: Get chapter info
+      description: Get cached summary and mind map status for a chapter
+      operationId: getChapterInfo
+      tags:
+        - mindmap
+      parameters:
+        - name: chapter_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Chapter identifier
+      responses:
+        '200':
+          description: Chapter info retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChapterInfoResponse'
+        '404':
+          description: Chapter not found
+
+  /mindmap/cached:
+    get:
+      summary: List cached content
+      description: List all cached summaries and mind maps
+      operationId: listCached
+      tags:
+        - mindmap
+      responses:
+        '200':
+          description: List of cached items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  summaries:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        chapter_id:
+                          type: string
+                        generated_at:
+                          type: string
+                          format: date-time
+                  mindmaps:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        chapter_id:
+                          type: string
+                        generated_at:
+                          type: string
+                          format: date-time
+
+components:
+  schemas:
+    SummaryRequest:
+      type: object
+      required:
+        - chapter_id
+        - chapter_content
+        - chapter_title
+      properties:
+        chapter_id:
+          type: string
+          description: Unique chapter identifier
+          example: "intro"
+        chapter_content:
+          type: string
+          description: Full chapter text content
+          minLength: 100
+        chapter_title:
+          type: string
+          description: Chapter title
+          example: "Introduction to Physical AI"
+        force_regenerate:
+          type: boolean
+          default: false
+          description: Force regeneration even if cached
+
+    SummaryResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        summary:
+          $ref: '#/components/schemas/Summary'
+        cached:
+          type: boolean
+          description: Whether result was from cache
+        error:
+          type: string
+          description: Error message if failed
+
+    Summary:
+      type: object
+      properties:
+        chapter_id:
+          type: string
+        title:
+          type: string
+        key_points:
+          type: array
+          items:
+            type: string
+          minItems: 3
+          maxItems: 5
+        main_concepts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Concept'
+        takeaways:
+          type: array
+          items:
+            type: string
+        word_count:
+          type: integer
+          minimum: 200
+          maximum: 400
+        generated_at:
+          type: string
+          format: date-time
+
+    Concept:
+      type: object
+      properties:
+        term:
+          type: string
+        definition:
+          type: string
+
+    MindMapRequest:
+      type: object
+      required:
+        - chapter_id
+        - chapter_content
+        - chapter_title
+      properties:
+        chapter_id:
+          type: string
+        chapter_content:
+          type: string
+          minLength: 100
+        chapter_title:
+          type: string
+        force_regenerate:
+          type: boolean
+          default: false
+
+    MindMapResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        mindmap:
+          $ref: '#/components/schemas/MindMap'
+        cached:
+          type: boolean
+        error:
+          type: string
+
+    MindMap:
+      type: object
+      properties:
+        chapter_id:
+          type: string
+        title:
+          type: string
+        central_topic:
+          $ref: '#/components/schemas/MindMapNode'
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/MindMapNode'
+        edges:
+          type: array
+          items:
+            $ref: '#/components/schemas/MindMapEdge'
+        node_count:
+          type: integer
+          minimum: 5
+          maximum: 25
+        max_depth:
+          type: integer
+          minimum: 1
+          maximum: 3
+        generated_at:
+          type: string
+          format: date-time
+
+    MindMapNode:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+          maxLength: 30
+        description:
+          type: string
+          maxLength: 200
+        level:
+          type: integer
+          minimum: 0
+          maximum: 2
+        parent_id:
+          type: string
+          nullable: true
+        content_anchor:
+          type: string
+          nullable: true
+        position:
+          type: object
+          properties:
+            x:
+              type: number
+            y:
+              type: number
+
+    MindMapEdge:
+      type: object
+      properties:
+        id:
+          type: string
+        source:
+          type: string
+        target:
+          type: string
+        label:
+          type: string
+          nullable: true
+        type:
+          type: string
+          enum: [default, dashed]
+          default: default
+
+    ChapterInfoResponse:
+      type: object
+      properties:
+        chapter_id:
+          type: string
+        has_summary:
+          type: boolean
+        has_mindmap:
+          type: boolean
+        summary:
+          $ref: '#/components/schemas/Summary'
+        mindmap:
+          $ref: '#/components/schemas/MindMap'
+
+tags:
+  - name: mindmap
+    description: Mind map and summary generation endpoints

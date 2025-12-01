@@ -6,5 +6,6 @@ from .podcast import router as podcast_router
 from .auth import router as auth_router
 from .personalization import router as personalization_router
 from .translation import router as translation_router
+from .mindmap import router as mindmap_router
 
-__all__ = ["chat_router", "health_router", "diagram_router", "podcast_router", "auth_router", "personalization_router", "translation_router"]
+__all__ = ["chat_router", "health_router", "diagram_router", "podcast_router", "auth_router", "personalization_router", "translation_router", "mindmap_router"]

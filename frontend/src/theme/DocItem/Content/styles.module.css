@@ -1,0 +1,123 @@
+/* Tab Container */
+.tabContainer {
+  margin: 1.5rem 0 1rem 0;
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.tabList {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.tabList::-webkit-scrollbar {
+  display: none;
+}
+
+/* Tab Buttons */
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--ifm-color-emphasis-600);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: var(--ifm-color-primary);
+  background: var(--ifm-color-emphasis-50);
+}
+
+.tab svg {
+  flex-shrink: 0;
+}
+
+.activeTab {
+  color: var(--ifm-color-primary);
+  border-bottom-color: var(--ifm-color-primary);
+}
+
+.activeTab svg {
+  color: var(--ifm-color-primary);
+}
+
+/* Tab Panels */
+.tabPanels {
+  margin-top: 1rem;
+}
+
+.tabPanel {
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Section highlight for mind map navigation */
+.highlight {
+  animation: highlightPulse 2s ease;
+}
+
+@keyframes highlightPulse {
+  0%, 100% {
+    background-color: transparent;
+  }
+  25%, 75% {
+    background-color: rgba(118, 185, 0, 0.15);
+    border-radius: 4px;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .tab {
+    padding: 0.625rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .tab svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* Dark mode adjustments */
+[data-theme='dark'] .tabContainer {
+  border-bottom-color: var(--ifm-color-emphasis-300);
+}
+
+[data-theme='dark'] .tab:hover {
+  background: var(--ifm-color-emphasis-100);
+}
+
+[data-theme='dark'] .highlight {
+  animation: highlightPulseDark 2s ease;
+}
+
+@keyframes highlightPulseDark {
+  0%, 100% {
+    background-color: transparent;
+  }
+  25%, 75% {
+    background-color: rgba(118, 185, 0, 0.2);
+    border-radius: 4px;
+  }
+}

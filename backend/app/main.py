@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 from pathlib import Path
 from app.config import get_settings
-from app.routers import chat_router, health_router, diagram_router, podcast_router, auth_router, personalization_router, translation_router
+from app.routers import chat_router, health_router, diagram_router, podcast_router, auth_router, personalization_router, translation_router, mindmap_router
 from app.services.vector_store import get_vector_store
 from app.services.indexer import index_all_content
 
@@ -67,6 +67,7 @@ app.include_router(podcast_router, prefix="/api")
 app.include_router(auth_router, prefix="/api")
 app.include_router(personalization_router, prefix="/api")
 app.include_router(translation_router, prefix="/api")
+app.include_router(mindmap_router, prefix="/api")
 
 # Mount static files for podcast audio
 # Create audio directory if it doesn't exist
