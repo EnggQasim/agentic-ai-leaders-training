@@ -16,6 +16,9 @@ By the end of Day 1, you will be able to:
 - Master **Context Engineering** for building AI systems
 - Use zero-shot, few-shot, and chain-of-thought techniques
 - Configure AI parameters for different use cases
+- Create professional **images and videos** with AI prompts
+- Build **UI applications** without code using AI tools
+- Design **user experiences** with AI-assisted UX tools
 - Create a personal prompt library for SIEHS tasks
 
 ## Modules
@@ -35,21 +38,28 @@ By the end of Day 1, you will be able to:
 - Role-Based Prompting
 - **Exercise**: Emergency SMS Templates
 
-### Module 3: Advanced Prompting Techniques
+### Module 3: Creative AI Prompting
+- [**Image Generation**](./module-3-advanced/image-generation) - Create professional images with structured prompts
+- [**Video Generation**](./module-3-advanced/video-generation) - Cinematic video creation with AI (Google Veo 3)
+- [**UI Development**](./module-3-advanced/ui-development) - Build applications without code (Lovable AI)
+- [**UX Design**](./module-3-advanced/ux-design) - Design interfaces with AI assistance (UXPilot)
+- **Exercise**: Create SIEHS Marketing Materials
+
+### Module 4: Advanced Prompting Techniques
 - Chain of Thought (CoT)
 - Self-Consistency
 - Step-Back Prompting
 - ReAct Framework
 - **Exercise**: Complex Decision Scenarios
 
-### Module 4: Configuration & Best Practices
+### Module 5: Configuration & Best Practices
 - Temperature and Creativity Control
 - Token Limits and Context Windows
 - Output Formatting
 - Healthcare Safety Guidelines
 - **Exercise**: Parameter Experimentation
 
-### Module 5: SIEHS Applied Workshop
+### Module 6: SIEHS Applied Workshop
 - Triage Communication Prompts
 - Incident Report Summarization
 - Patient FAQ Automation
@@ -62,6 +72,10 @@ By the end of Day 1, you will be able to:
 |-----------|---------|-------------|
 | **Six-Part Framework** | Structuring prompts | Command → Context → Logic → Roleplay → Format → Questions |
 | **Context Engineering** | Building AI systems | Right information, right format, right time |
+| **Image Prompting** | Visual content creation | Subject → Environment → Lighting → Style → Technical |
+| **Video Prompting** | Cinematic content | Camera → Action → Audio → Style (8-second moments) |
+| **UI Development** | No-code apps | Plan → Prompt → Test → Iterate |
+| **UX Design** | Interface design | Features → Flows → Brief → High-Fidelity |
 
 ## Deliverable
 
@@ -74,3 +88,5 @@ By the end of Day 1, you will be able to:
 ---
 
 **Start with Module 2** to learn the Six-Part Prompting Framework and Context Engineering fundamentals!
+
+Then explore **Module 3** for creative AI prompting with images, videos, UI development, and UX design.
