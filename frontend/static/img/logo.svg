@@ -1,42 +1,23 @@
 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Outer circle - represents physical embodiment -->
-  <circle cx="32" cy="32" r="30" stroke="#76b900" stroke-width="3" fill="none"/>
+  <!-- Outer circle - SIEHS blue -->
+  <circle cx="32" cy="32" r="30" stroke="#1e88e5" stroke-width="3" fill="none"/>
 
-  <!-- Robot head outline -->
-  <rect x="18" y="14" width="28" height="24" rx="4" fill="#1a1a1a"/>
+  <!-- Medical cross - emergency services symbol -->
+  <rect x="26" y="12" width="12" height="40" rx="2" fill="#1e88e5"/>
+  <rect x="12" y="26" width="40" height="12" rx="2" fill="#1e88e5"/>
 
-  <!-- Robot eyes - LED style -->
-  <circle cx="25" cy="24" r="4" fill="#76b900"/>
-  <circle cx="39" cy="24" r="4" fill="#76b900"/>
+  <!-- AI/Neural nodes at corners - representing AI integration -->
+  <circle cx="14" cy="14" r="4" fill="#1e88e5" opacity="0.7"/>
+  <circle cx="50" cy="14" r="4" fill="#1e88e5" opacity="0.7"/>
+  <circle cx="14" cy="50" r="4" fill="#1e88e5" opacity="0.7"/>
+  <circle cx="50" cy="50" r="4" fill="#1e88e5" opacity="0.7"/>
 
-  <!-- Eye glow effect -->
-  <circle cx="25" cy="24" r="2" fill="#ffffff" opacity="0.6"/>
-  <circle cx="39" cy="24" r="2" fill="#ffffff" opacity="0.6"/>
+  <!-- Connection lines - neural network concept -->
+  <line x1="18" y1="18" x2="26" y2="26" stroke="#1e88e5" stroke-width="1.5" opacity="0.5"/>
+  <line x1="46" y1="18" x2="38" y2="26" stroke="#1e88e5" stroke-width="1.5" opacity="0.5"/>
+  <line x1="18" y1="46" x2="26" y2="38" stroke="#1e88e5" stroke-width="1.5" opacity="0.5"/>
+  <line x1="46" y1="46" x2="38" y2="38" stroke="#1e88e5" stroke-width="1.5" opacity="0.5"/>
 
-  <!-- Robot mouth/speaker grille -->
-  <rect x="24" y="30" width="16" height="4" rx="1" fill="#333333"/>
-  <line x1="26" y1="32" x2="38" y2="32" stroke="#76b900" stroke-width="1"/>
-
-  <!-- Robot neck -->
-  <rect x="28" y="38" width="8" height="4" fill="#1a1a1a"/>
-
-  <!-- Neural network nodes - AI brain concept -->
-  <circle cx="32" cy="50" r="3" fill="#76b900"/>
-  <circle cx="22" cy="54" r="2" fill="#76b900"/>
-  <circle cx="42" cy="54" r="2" fill="#76b900"/>
-  <circle cx="17" cy="48" r="2" fill="#76b900"/>
-  <circle cx="47" cy="48" r="2" fill="#76b900"/>
-
-  <!-- Neural connections -->
-  <line x1="32" y1="50" x2="22" y2="54" stroke="#76b900" stroke-width="1.5"/>
-  <line x1="32" y1="50" x2="42" y2="54" stroke="#76b900" stroke-width="1.5"/>
-  <line x1="22" y1="54" x2="17" y2="48" stroke="#76b900" stroke-width="1"/>
-  <line x1="42" y1="54" x2="47" y2="48" stroke="#76b900" stroke-width="1"/>
-
-  <!-- Connection from robot to neural network -->
-  <line x1="32" y1="42" x2="32" y2="47" stroke="#76b900" stroke-width="2" stroke-dasharray="2,1"/>
-
-  <!-- Antenna - receiving signals -->
-  <line x1="32" y1="14" x2="32" y2="8" stroke="#1a1a1a" stroke-width="2"/>
-  <circle cx="32" cy="6" r="3" fill="#76b900"/>
+  <!-- Center highlight - cross center -->
+  <circle cx="32" cy="32" r="4" fill="white"/>
 </svg>
