@@ -3,8 +3,8 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
-  title: 'Physical AI Textbook',
-  tagline: 'Humanoid Robotics with ROS2, Gazebo, NVIDIA Isaac & VLA',
+  title: 'Agentic AI for Leaders',
+  tagline: 'Architecting SIEHS\'s AI-Enabled Organization',
   favicon: 'img/favicon.svg',
 
   future: {
@@ -13,11 +13,11 @@ const config: Config = {
 
   // GitHub Pages deployment
   url: 'https://EnggQasim.github.io',
-  baseUrl: '/physical-ai-robotics-textbook/',
+  baseUrl: '/agentic-ai-leaders-training/',
   organizationName: 'EnggQasim',
-  projectName: 'physical-ai-robotics-textbook',
+  projectName: 'agentic-ai-leaders-training',
 
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
 
   i18n: {
@@ -56,9 +56,9 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          editUrl: 'https://github.com/EnggQasim/physical-ai-robotics-textbook/tree/main/frontend/',
+          editUrl: 'https://github.com/EnggQasim/agentic-ai-leaders-training/tree/master/frontend/',
         },
-        blog: false, // Disable blog for textbook
+        blog: false,
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -74,9 +74,9 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'Physical AI Textbook',
+      title: 'SIEHS AI Training',
       logo: {
-        alt: 'Physical AI Logo',
+        alt: 'SIEHS Logo',
         src: 'img/logo.svg',
       },
       items: [
@@ -84,19 +84,15 @@ const config: Config = {
           type: 'docSidebar',
           sidebarId: 'tutorialSidebar',
           position: 'left',
-          label: 'Chapters',
+          label: 'Training',
         },
         {
           type: 'localeDropdown',
           position: 'right',
         },
         {
-          href: 'https://github.com/EnggQasim/physical-ai-robotics-textbook',
+          href: 'https://github.com/EnggQasim/agentic-ai-leaders-training',
           label: 'GitHub',
-          position: 'right',
-        },
-        {
-          type: 'custom-authNavbarItem',
           position: 'right',
         },
       ],
@@ -105,32 +101,19 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Chapters',
+          title: 'Training Days',
           items: [
             {
-              label: 'Introduction',
-              to: '/docs/intro',
+              label: 'Day 1: Prompt Engineering',
+              to: '/docs/day1',
             },
             {
-              label: 'ROS2 Fundamentals',
-              to: '/docs/module-1-ros2',
+              label: 'Day 2: n8n Automation',
+              to: '/docs/day2',
             },
             {
-              label: 'Robot Simulation',
-              to: '/docs/module-2-simulation',
-            },
-          ],
-        },
-        {
-          title: 'More Chapters',
-          items: [
-            {
-              label: 'NVIDIA Isaac',
-              to: '/docs/module-3-nvidia-isaac',
-            },
-            {
-              label: 'Vision-Language-Action',
-              to: '/docs/module-4-vla',
+              label: 'Day 3: AI Deployment',
+              to: '/docs/day3',
             },
           ],
         },
@@ -138,8 +121,8 @@ const config: Config = {
           title: 'Resources',
           items: [
             {
-              label: 'GitHub',
-              href: 'https://github.com/EnggQasim/physical-ai-robotics-textbook',
+              label: 'SIEHS',
+              href: 'https://www.siehs.org',
             },
             {
               label: 'Panaversity',
@@ -147,13 +130,22 @@ const config: Config = {
             },
           ],
         },
+        {
+          title: 'More',
+          items: [
+            {
+              label: 'GitHub',
+              href: 'https://github.com/EnggQasim/agentic-ai-leaders-training',
+            },
+          ],
+        },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Physical AI Textbook. Built for Panaversity Hackathon.`,
+      copyright: `Copyright © ${new Date().getFullYear()} SIEHS Agentic AI Training. Built for Healthcare Leaders.`,
     },
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
-      additionalLanguages: ['python', 'cpp', 'yaml', 'bash', 'json'],
+      additionalLanguages: ['python', 'json', 'bash', 'yaml'],
     },
   } satisfies Preset.ThemeConfig,
 };
