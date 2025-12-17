@@ -209,11 +209,66 @@ Wait for consent; never auto-create ADRs. Group related decisions (stacks, authe
 ## Code Standards
 See `.specify/memory/constitution.md` for code quality, testing, performance, security, and architecture principles.
 
+## Project Context
+
+**Project**: SIEHS Agentic AI Training Book
+**Organization**: Sindh Integrated Emergency & Health Services (SIEHS)
+**Training Title**: Agentic AI for Leaders: Architecting SIEHS's AI-Enabled Organization
+**Duration**: 3 Days
+**Target Audience**: SIEHS Leadership, Emergency Response Managers, Healthcare Administrators
+
+### Training Overview
+
+**Day 1 - Prompt Engineering Fundamentals** (001-day1-prompt-engineering)
+- LLM fundamentals and how AI works
+- Zero-shot, few-shot, and role-based prompting
+- Chain of Thought and advanced reasoning techniques
+- SIEHS-specific prompt applications (triage, communication, reporting)
+- Source: https://github.com/panaversity/learn-low-code-agentic-ai/tree/main/00_prompt_engineering
+
+**Day 2 - n8n Workflow Automation** (002-day2-n8n-automation)
+- n8n introduction and interface mastery
+- Google Sheets integration
+- Gmail automation
+- Building Google Sheets → Gmail auto email sender workflow
+- Error handling and production readiness
+
+**Day 3 - AI Deployment & SDD** (003-day3-ai-deployment)
+- n8n Auto Email Responder with AI integration
+- OpenAI AgentKit configuration
+- ChatKit widget development
+- Vercel deployment
+- Spec-Driven Development (SDD) introduction
+- Source: https://ai-native.panaversity.org/docs/SDD-RI-Fundamentals
+
 ## Active Technologies
-- TypeScript/JavaScript (Node.js 18+) + Docusaurus 3.x, React 18, Tailwind CSS (001-docusaurus-book)
-- N/A (static site, content in markdown files) (001-docusaurus-book)
-- Python 3.11 (backend), TypeScript 5.x (frontend) + FastAPI, OpenAI API, React 18, React Flow (mind map visualization) (008-mindmap-summary)
-- JSON file-based caching (following existing podcast/diagram pattern) (008-mindmap-summary)
+
+### Frontend/Documentation
+- Docusaurus 3.x + React 18 + TypeScript 5.x (training book)
+- MDX 2.x (interactive content)
+- Tailwind CSS 3.x (styling)
+
+### Automation Platform
+- n8n Cloud (workflow automation)
+- Google Sheets API (data source)
+- Gmail API (email sending)
+
+### AI Services
+- OpenAI API (GPT-3.5-turbo, GPT-4)
+- OpenAI Assistants API (agent configuration)
+- Vercel AI SDK (streaming chat)
+
+### Deployment
+- Vercel (chatbot hosting)
+- GitHub (code repository)
+- GitHub Pages (optional docs hosting)
+
+### Development
+- Node.js 18+
+- Next.js 14 (chatbot template)
 
 ## Recent Changes
-- 001-docusaurus-book: Added TypeScript/JavaScript (Node.js 18+) + Docusaurus 3.x, React 18, Tailwind CSS
+- 2025-12-18: Created implementation plans for all 3 training days
+- 2025-12-18: Updated constitution for SIEHS training context (v3.0.0)
+- 2025-12-18: Created new training specs for 3-day SIEHS Agentic AI program
+- 2025-12-18: Removed previous Physical AI textbook specs (001-008)

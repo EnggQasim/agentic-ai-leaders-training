@@ -1,257 +1,203 @@
 <!-- Sync Impact Report
-Version change: 2.1.0 → 2.2.0
-Modified principles: II (Content-Before-Enhancement), IV (Grounded AI Responses)
-Added sections: Demo Requirements, VIII (Visual Learning with AI)
-Removed sections: None
-Templates requiring updates: ✅ None
-Rationale: Added Gemini Nano for conceptual diagram/GIF generation to enhance learning
+Version change: 2.2.0 → 3.0.0
+Modified principles: Complete rewrite for new project scope
+Added sections: Training-specific principles, Day-based structure
+Removed sections: Physical AI/Robotics content, hackathon deadlines
+Rationale: Project pivot from Physical AI textbook to SIEHS 3-day Agentic AI Leadership Training
 -->
 
-# Physical AI Textbook Constitution
+# SIEHS Agentic AI Training Constitution
+
+## Project Overview
+
+**Training Title**: Agentic AI for Leaders: Architecting SIEHS's AI-Enabled Organization
+**Organization**: Sindh Integrated Emergency & Health Services (SIEHS)
+**Duration**: 3 Days (8 hours each)
+**Target Audience**: SIEHS Leadership, Emergency Response Managers, Healthcare Administrators
+**Delivery Format**: Docusaurus-based training book with hands-on exercises
 
 ## Core Principles
 
-### I. Deadline-First Delivery (NON-NEGOTIABLE)
-All submitted work MUST be demonstrable by **November 30, 2025 at 6:00 PM PKT**.
-- Features not demo-ready by deadline MUST be excluded from final submission
-- Demo video MUST be under 90 seconds
-- Incomplete features MUST NOT break working features
-- Priority order MUST be followed: Book Content → RAG Chatbot → Bonus Features
+### I. Learner-First Design (NON-NEGOTIABLE)
+All content MUST be designed for non-technical healthcare/emergency service leaders.
+- No prior AI or programming experience MUST be assumed
+- Technical jargon MUST be explained in plain language with healthcare analogies
+- Every concept MUST include a SIEHS-relevant example or use case
+- Content MUST be immediately actionable - participants leave with working tools
 
-### II. Content-Before-Enhancement
-Book content MUST exist before any enhancement features begin implementation.
-- Minimum 2 complete chapters MUST be written (content ready, not necessarily deployed) before RAG chatbot development starts
-- Minimum 3 complete chapters MUST exist before podcast/diagram generation begins
-- Each chapter MUST have: title, learning objectives, main content (2000+ words), code examples, summary
-- Content structure MUST support chunking for RAG retrieval (clear headings, semantic sections)
-- RAG indexing MAY proceed with draft content for development/testing purposes
+### II. Progressive Skill Building
+Training MUST follow a logical progression from foundations to deployment.
+- **Day 1**: Understand AI → Communicate with AI → Apply to SIEHS scenarios
+- **Day 2**: Understand automation → Build workflows → Deploy email automation
+- **Day 3**: Integrate AI + automation → Deploy chatbots → Strategic planning
+- Each day MUST build on previous day's skills
+- Each module MUST have hands-on exercises that reinforce theory
 
-### III. Testable Acceptance Criteria
-Every feature MUST have measurable acceptance criteria defined BEFORE implementation begins.
-- Each user story MUST include Given/When/Then scenarios
-- Each requirement MUST be verifiable without subjective judgment
-- Success criteria MUST use quantifiable metrics (time, count, percentage, score)
-- Edge cases MUST be documented with expected behavior
+### III. Hands-On Deliverables
+Every training day MUST produce tangible, usable outputs.
+- **Day 1 Deliverable**: Personal library of 5+ tested prompt templates for SIEHS work
+- **Day 2 Deliverable**: Working Google Sheets → Gmail automation workflow
+- **Day 3 Deliverable**: Live deployed SIEHS FAQ chatbot accessible via public URL
+- Participants MUST NOT leave empty-handed from any session
 
-### IV. Grounded AI Responses
-All AI-generated responses MUST be grounded in indexed content.
-- Chatbot answers MUST cite source chapter/section for every claim
-- For questions directly covered in the book, chatbot MUST answer from book content only
-- For related topics not explicitly in the book, chatbot MAY provide brief context while directing user to relevant chapters (e.g., "While [topic] isn't covered in detail, Chapter 3 discusses related concepts...")
-- For completely unrelated topics, chatbot MUST respond: "I can only answer questions about Physical AI and Robotics topics covered in this textbook."
-- Personalized content MUST preserve factual accuracy from original
-- Translations MUST maintain technical term accuracy (provide original term in parentheses)
+### IV. Healthcare/Emergency Context
+All examples, exercises, and content MUST be relevant to SIEHS operations.
+- Use cases MUST reflect real SIEHS workflows: triage, patient communication, incident reporting
+- Safety considerations MUST address healthcare data sensitivity (HIPAA-like awareness)
+- AI responses MUST include appropriate disclaimers for medical/emergency content
+- Prompts MUST never encourage AI to provide actual medical diagnoses
 
-### V. Accessibility-First
-All user-facing content MUST meet accessibility standards.
+### V. Testable Learning Outcomes
+Every module MUST have measurable success criteria.
+- Each user story MUST include Given/When/Then acceptance scenarios
+- Success metrics MUST use quantifiable measures (percentage completion, working outputs)
+- Skill verification MUST be observable (participant demonstrates capability)
+- Post-training surveys MUST assess confidence and readiness
+
+### VI. Accessibility & Inclusion
+Training materials MUST be accessible to all SIEHS staff.
+- Content MUST work on mobile devices (many field staff use phones)
+- Key terms MUST include Urdu translations where helpful
 - Pages MUST pass Lighthouse accessibility score of 85+
-- All images MUST have descriptive alt text
-- All interactive elements MUST be keyboard navigable
+- All images and diagrams MUST have descriptive alt text
 - Color contrast MUST meet WCAG AA standards
-- Mobile responsiveness MUST work on screens 320px and wider
 
-### VI. Security Boundaries
-All sensitive data MUST be protected from exposure.
-- API keys and secrets MUST NEVER appear in code or version control
-- All secrets MUST be loaded from environment variables
-- User passwords MUST be hashed (never stored in plaintext)
-- AI endpoints MUST implement rate limiting (max 10 requests/minute per IP for anonymous users)
-- All user input MUST be validated before processing
+### VII. Security & Responsible AI
+Training MUST emphasize safe and ethical AI use in healthcare.
+- API keys and credentials MUST NEVER be shared or displayed in screenshots
+- Patient data MUST NEVER be used in training exercises (use synthetic data only)
+- AI limitations MUST be clearly communicated (hallucination risks, not a replacement for medical professionals)
+- Human-in-the-loop requirements MUST be emphasized for critical decisions
+- Data privacy considerations MUST be addressed for any cloud-based tools
 
-### VII. Spec-Driven Development
-All features MUST follow the Spec-Kit Plus workflow.
-- Every feature MUST have a specification before planning begins
+### VIII. Spec-Driven Development
+All training features MUST follow the Spec-Kit Plus workflow.
+- Every training day MUST have a specification before content creation begins
 - Every plan MUST be approved before implementation begins
 - Every significant decision MUST be recorded as PHR or ADR
 - Constitution MUST be consulted when resolving conflicts between requirements
 
-### VIII. Visual Learning with AI (Gemini API + Claude Skills)
-Complex concepts SHOULD be enhanced with AI-generated visual explanations using Claude skills.
+## Training Structure
 
-**Skills Available**:
-| Skill | Location | Purpose |
-|-------|----------|---------|
-| image-generation | `.claude/skills/image-generation.md` | Static diagrams, icons, logos |
-| generate-gif-image | `.claude/skills/generate-gif-image.md` | Animated GIFs for dynamic concepts |
+### Day 1: Prompt Engineering Fundamentals (8 hours)
+**Goal**: Participants understand AI and can write effective prompts for SIEHS work
 
-**Generator Scripts**:
-- `.specify/scripts/python/gemini_image.py` - SVG/PNG diagram generation
-- `.specify/scripts/python/gemini_gif.py` - Animated GIF generation
+| Module | Duration | Topic | Deliverable |
+|--------|----------|-------|-------------|
+| 1 | 1 hour | Introduction to AI & LLMs | Understanding quiz |
+| 2 | 2 hours | Prompting Fundamentals | 3 working prompts |
+| 3 | 2 hours | Advanced Techniques | CoT prompt for complex scenario |
+| 4 | 1.5 hours | Configuration & Safety | Parameter cheat sheet |
+| 5 | 1.5 hours | SIEHS Workshop | Personal prompt library (5+) |
 
-#### Capabilities
-- **AI-Generated Diagrams** (Gemini API): Technical diagrams, workflows, architecture
-- **Hand-Crafted SVG Icons**: Module icons, feature icons, logos, branding assets
-- **Animated GIFs** (Gemini 2.5 Flash): Process animations, data flows, state transitions
+**Source Material**: https://github.com/panaversity/learn-low-code-agentic-ai/tree/main/00_prompt_engineering
 
-#### Visual Content Types
-| Type | Method | Output Location |
-|------|--------|-----------------|
-| Technical diagrams | Gemini API | `/static/img/generated/` |
-| Workflow diagrams | Gemini API | `/static/img/generated/` |
-| Module icons | Hand-crafted SVG | `/static/img/icons/` |
-| Feature icons | Hand-crafted SVG | `/static/img/icons/` |
-| Site logo | Hand-crafted SVG | `/static/img/logo.svg` |
-| Process animations | Gemini GIF API | `/static/img/animations/` |
-| Data flow animations | Gemini GIF API | `/static/img/animations/` |
+### Day 2: n8n Workflow Automation (8 hours)
+**Goal**: Participants can build and deploy automated workflows
 
-#### Visual Content Triggers
+| Module | Duration | Topic | Deliverable |
+|--------|----------|-------|-------------|
+| 1 | 1 hour | Automation Introduction | Opportunity mapping |
+| 2 | 1.5 hours | n8n Interface | Simple test workflow |
+| 3 | 1.5 hours | Google Sheets Integration | Sheet reader workflow |
+| 4 | 2 hours | Gmail Integration | Complete email sender |
+| 5 | 1.5 hours | Production Readiness | Error-handled workflow |
+| 6 | 0.5 hours | Use Case Workshop | Implementation roadmap |
 
-**Static Visuals (Diagrams/Icons)**:
-- Complex algorithms or data structures
-- System architectures and component interactions
-- Module/feature representation (icons with conceptual meaning)
-- Site branding (logo, navigation icons)
+**Core Deliverable**: Working Google Sheets → Gmail automation
 
-**Animated Visuals (GIFs)** - Use when showing:
-- State machines and workflow sequences
-- Robot motion and sensor data flows
-- ROS2 communication patterns (pub/sub message flow)
-- Data pipelines and processing steps
-- Learning loops and training cycles
-- Simulation physics steps
-- Any concept where MOVEMENT helps understanding
+### Day 3: AI Deployment & Strategy (8 hours)
+**Goal**: Participants deploy AI solutions and plan organizational adoption
 
-#### Requirements
-- Generated visuals MUST:
-  - Include descriptive alt text for accessibility
-  - Follow consistent styling (NVIDIA green theme #76b900, dark #1a1a1a)
-  - Be optimized for web (SVG preferred, max 500KB for raster images)
-  - Use `useBaseUrl` hook in React components for proper path resolution
-- Icons MUST:
-  - Be 64x64 viewBox for consistency
-  - Visually represent the concept they depict
-  - Include hover animations for interactivity
-- Animated GIFs MUST:
-  - Be max 2MB file size for fast loading
-  - Loop seamlessly (end connects to start)
-  - Use 10-15 fps for smooth motion
-  - Be 800x600 or 600x400 dimensions
-  - Have descriptive alt text explaining the animation sequence
-  - Include static fallback for slow connections
+| Module | Duration | Topic | Deliverable |
+|--------|----------|-------|-------------|
+| 1 | 2 hours | n8n Auto Email Responder | AI-powered responder |
+| 2 | 1.5 hours | OpenAI AgentKit | Configured SIEHS agent |
+| 3 | 1.5 hours | ChatKit Development | Custom chat widget |
+| 4 | 1 hour | Vercel Deployment | Live public URL |
+| 5 | 1 hour | SDD Introduction | Sample specification |
+| 6 | 1 hour | Strategy Workshop | 3-initiative AI roadmap |
 
-#### Diagram Styles (Gemini API)
-- `technical`: System components, data structures (default)
-- `workflow`: Step-by-step processes
-- `architecture`: High-level system design
-- `simple`: Basic introductory concepts
-
-#### Animation Styles (GIF Generation)
-- `loop`: Continuous processes (e.g., ROS2 message publishing)
-- `sequence`: Step-by-step procedures (e.g., robot boot sequence)
-- `flow`: Data/message movement (e.g., topic message flow)
-- `transition`: State changes (e.g., FSM transitions)
-- `cycle`: Repeating patterns (e.g., control loop iterations)
-
-#### Icon Design Patterns (Hand-Crafted)
-- **Module Icon**: Core concept symbol + context (e.g., ROS2: nodes + topic + arrows)
-- **Feature Icon**: Abstract representation (e.g., GPU: chip + 3D rendering)
-- **Concept Icon**: Metaphor or analogy (e.g., AI Brain: neural network)
-- **Logo**: Brand identity + concept (e.g., Robot head + neural network)
-
-#### Visual Generation Workflow
-
-**Decision Tree**:
-1. Is the concept about MOVEMENT or FLOW? → Use **generate-gif-image** skill
-2. Is it a MODULE or FEATURE icon? → Use **image-generation** skill (hand-crafted SVG)
-3. Is it a static technical concept? → Use **image-generation** skill (Gemini API)
-
-**For Static Diagrams/Icons**:
-1. Run `/sp.diagram <concept>` or use image-generation skill
-2. For icons: Create hand-crafted SVG with conceptual elements
-3. Review for technical accuracy
-4. Add to chapter with markdown: `![Alt](/img/generated/file.svg)`
-
-**For Animated GIFs**:
-1. Run `python .specify/scripts/python/gemini_gif.py --prompt "<concept>" --style <style>`
-2. Review animation for clarity and smooth looping
-3. Add to chapter with markdown: `![Animation: <description>](/img/animations/file.gif)`
-4. Always include static fallback image
-
-- Fallback: ASCII diagrams in code blocks when API unavailable or quota exceeded
+**Core Deliverable**: Live deployed SIEHS chatbot
+**SDD Source**: https://ai-native.panaversity.org/docs/SDD-RI-Fundamentals
 
 ## Quality Standards
 
-### Response Time Requirements
+### Content Quality Requirements
+- Each module: clear learning objectives stated upfront
+- Every concept: at least one SIEHS-relevant example
+- Code/workflow examples: must be copy-paste ready and tested
+- Screenshots: must reflect current UI versions of tools
+- Technical accuracy: all AI/automation concepts must be factually correct
+
+### Training Delivery Requirements
+| Metric | Target |
+|--------|--------|
+| Hands-on exercise completion rate | 90%+ |
+| Participant satisfaction (survey) | 4.0/5.0+ |
+| Working deliverable completion | 95%+ |
+| Post-training confidence score | 85%+ report "confident" |
+
+### Technical Requirements
 | Operation | Maximum Time |
 |-----------|--------------|
-| Page load (initial) | 3 seconds |
-| Page navigation | 1 second |
-| Search results | 2 seconds |
-| Chatbot response (streaming start) | 3 seconds |
-| Chatbot response (complete) | 10 seconds |
-| Image search results | 5 seconds |
-
-### Content Quality Requirements
-- Each chapter: minimum 2,000 words of educational content
-- Code examples: must be syntactically correct and include comments
-- Technical accuracy: all robotics/AI concepts must be factually correct
-- Internal links: 100% must resolve (no 404 errors)
-
-### AI Quality Requirements
-- RAG relevance: 90% of answers must correctly address the question
-- Source accuracy: 95% of cited sources must contain relevant information
-- Hallucination rate: less than 5% of responses may contain unsupported claims
+| Training page load | 3 seconds |
+| Exercise environment setup | 5 minutes |
+| Workflow execution (n8n) | 30 seconds |
+| Chatbot response | 5 seconds |
 
 ## Constraints
 
 ### Hard Constraints (Cannot Be Violated)
-- Hackathon deadline: November 30, 2025, 6:00 PM PKT
-- Deployment target: GitHub Pages (static site) + Backend API (separate host)
-- Free tier services only: Qdrant Cloud, Neon PostgreSQL
-- Demo video: maximum 90 seconds
+- Training duration: 3 days × 8 hours = 24 total hours
+- Target audience: Non-technical healthcare/emergency leaders
+- No patient data: All exercises use synthetic/example data only
+- Tool availability: Must use free tiers (n8n cloud, OpenAI, Vercel)
+- Accessibility: Mobile-friendly, Urdu considerations
 
 ### Soft Constraints (May Be Adjusted with Justification)
-- Chapter count: 4-5 chapters (minimum 4)
-- Book topic: Physical AI & Humanoid Robotics curriculum
-- Language: English primary, Urdu translation as bonus
+- Module timing: Can flex ±30 minutes based on group pace
+- Exercise complexity: Can simplify if group needs more support
+- Tool alternatives: Can substitute equivalent tools if needed
 
 ## Development Workflow
 
 ### Feature Implementation Order
-1. **P1 - Required (Base 100 points)**
-   - Docusaurus Book with 4-5 chapters
-   - RAG Chatbot with text search
-   - Image/diagram search capability
+1. **P1 - Core Training Content**
+   - Day 1: Prompt Engineering modules and exercises
+   - Day 2: n8n automation modules and workflows
+   - Day 3: AI deployment modules and chatbot
 
-2. **P2 - Differentiators (Impress Judges)**
-   - AI Podcast generation (Higgs Audio)
-   - AI Diagram/GIF generation (Gemini)
+2. **P2 - Supporting Materials**
+   - Exercise templates and starter files
+   - Reference cheat sheets
+   - Troubleshooting guides
 
-3. **P3 - Bonus Features (+50 points each)**
-   - User authentication (Better-Auth)
-   - Content personalization
-   - Urdu translation
-   - Claude Code agents/skills
+3. **P3 - Enhancement Features**
+   - Interactive quizzes
+   - Video walkthroughs
+   - Urdu translations
 
 ### Definition of Done
-A feature is "done" when:
-- [ ] All acceptance scenarios pass
-- [ ] No console errors in browser
-- [ ] Lighthouse accessibility score ≥ 85
-- [ ] Works on Chrome, Firefox, Safari
-- [ ] Works on mobile viewport (375px)
-- [ ] Error states handled gracefully
-- [ ] Documented in relevant spec file
-
-### Demo Requirements
-The final demo submission MUST meet these criteria:
-- Demo video MUST be 90 seconds or less (judges will only watch first 90 seconds)
-- Demo MUST show: book navigation, chatbot Q&A with source citations, at least one working bonus feature
-- Demo MUST NOT require login to demonstrate core features (book + chatbot)
-- Demo SHOULD have pre-cached responses for reliability (live API calls may timeout)
-- Demo MUST include: GitHub repo link, deployed book URL, demo video link
-- Presenter MUST be prepared to answer questions about implementation choices
+A training module is "done" when:
+- [ ] Learning objectives clearly stated
+- [ ] All concepts have SIEHS-relevant examples
+- [ ] Hands-on exercise tested and working
+- [ ] Screenshots current and accurate
+- [ ] Accessibility score ≥ 85
+- [ ] Mobile responsive
+- [ ] Reviewed for healthcare sensitivity
 
 ## Governance
 
 ### Constitution Authority
 - This Constitution supersedes all other project documentation when conflicts arise
 - Feature specifications MUST NOT contradict Constitutional principles
-- When in doubt, deadline-first principle takes precedence
+- When in doubt, learner-first principle takes precedence
 
 ### Amendment Process
 1. Document proposed change with rationale
-2. Assess impact on existing features
+2. Assess impact on training content and flow
 3. Update version number following semver:
    - MAJOR: Principle removed or fundamentally changed
    - MINOR: New principle or section added
@@ -260,8 +206,8 @@ The final demo submission MUST meet these criteria:
 5. Commit with message: `docs(constitution): <change summary>`
 
 ### Compliance Verification
-- All PRs MUST be checked against Constitutional principles
-- Spec reviews MUST verify testability of acceptance criteria
-- Final submission MUST pass all Quality Standards
+- All content MUST be reviewed against Constitutional principles
+- Spec reviews MUST verify testability of learning outcomes
+- Final training materials MUST pass all Quality Standards
 
-**Version**: 2.2.0 | **Ratified**: 2025-11-29 | **Last Amended**: 2025-11-30
+**Version**: 3.0.0 | **Ratified**: 2025-12-18 | **Last Amended**: 2025-12-18
