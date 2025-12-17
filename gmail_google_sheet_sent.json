@@ -1,0 +1,169 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1zppcLNd-ClDtz63E2hlAwhSPobOMaiXFEXF4eiJIDRs",
+          "mode": "list",
+          "cachedResultName": "SIEHS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zppcLNd-ClDtz63E2hlAwhSPobOMaiXFEXF4eiJIDRs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zppcLNd-ClDtz63E2hlAwhSPobOMaiXFEXF4eiJIDRs/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        240,
+        64
+      ],
+      "id": "7bddbb19-eb75-4c7a-8f57-8efcbd490005",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "hsCVENwfjuKnW2FT",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d5dccff5-b29f-44b8-9a93-46856622b002",
+              "name": "email",
+              "value": "={{ $json.email }}",
+              "type": "string"
+            },
+            {
+              "id": "a2d75a4f-fc98-4668-bf6e-c79e3d21a640",
+              "name": "customer_name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "9928c440-7c25-4582-9ecc-c9eb11788e8d",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "number"
+            },
+            {
+              "id": "a71b9922-07ec-4163-b5e6-524c7c4a2dba",
+              "name": "designation",
+              "value": "={{ $json.designation }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "1db8bab3-2776-4941-96b6-9ef20706b7c8",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "SIEHS AGENTIC AI Test Message 2",
+        "message": "=Hello  {{ $json.customer_name }},\n\nHonorable {{ $json.designation }} you are invited to take Agentic AI workshop at Head office.\n\nRegards,\nMuhammad Qasim\nCGAIO \nPIAIC | GIAIC | Cancer Clarity | Ranea.ai",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "9236a840-b325-48f3-a2bf-726cbcc03891",
+      "name": "Send a message",
+      "webhookId": "17d8c367-e396-4565-bb9e-b6a57500a1c6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "DWVXkxBNpBq0OtnW",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 15,
+              "triggerAtMinute": 58
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ddc9d917-d12f-45ee-a7ee-6b2e275d6a41",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "51388ea5-9ff7-4b06-8cc4-dfa33bdd5dc2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e2f1a2c697ebe9c62225ab4a9f863d096977a6f03f5ca247bea72ca54f6ae82c"
+  },
+  "id": "eVQrFqZSnFuex2ID",
+  "tags": []
+}

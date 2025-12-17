@@ -31,7 +31,7 @@ By the end of Day 2, you will be able to:
 - Nodes Explained
 - Connections and Data Flow
 - Credentials Management
-- **Exercise**: First Simple Workflow
+- **[Tutorial 1: Basic Customer Workflow](./tutorials/basic-workflow)** - Your first n8n workflow
 
 ### Module 3: Google Sheets Integration
 - Google Cloud Console Setup
@@ -45,7 +45,7 @@ By the end of Day 2, you will be able to:
 - Sending Emails
 - Variables and Expressions
 - HTML Email Templates
-- **Project**: Google Sheets → Gmail Automation
+- **[Tutorial 2: Gmail + Sheets Automation](./tutorials/gmail-sheets-workflow)** - Production-ready email automation
 
 ### Module 5: Production Readiness
 - Error Handling with Error Trigger
@@ -69,4 +69,11 @@ By the end of Day 2, you will be able to:
 
 ---
 
-*Content coming soon. This training material is under development.*
+## Hands-On Tutorials
+
+| Tutorial | Description | Duration |
+|----------|-------------|----------|
+| [**Tutorial 1: Basic Workflow**](./tutorials/basic-workflow) | Your first n8n workflow with data transformation | 30 min |
+| [**Tutorial 2: Gmail + Sheets**](./tutorials/gmail-sheets-workflow) | Production-ready email automation | 60 min |
+
+Start with Tutorial 1 to learn the fundamentals, then build the complete email automation in Tutorial 2!

@@ -1,0 +1,8 @@
+{
+  "label": "Hands-On Tutorials",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "Step-by-step n8n workflow tutorials for SIEHS automation."
+  }
+}
