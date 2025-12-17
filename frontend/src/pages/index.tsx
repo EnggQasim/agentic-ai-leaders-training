@@ -10,6 +10,26 @@ import * as THREE from 'three';
 
 import styles from './index.module.css';
 
+// Participant data
+const participants = [
+  { name: 'Haji Khan Rahu', designation: 'Senior Manager - Commercial', department: 'Commercial' },
+  { name: 'Muhammad Amman Hassan', designation: 'Analyst - Commercial', department: 'Commercial' },
+  { name: 'Kamran Zulfiqar', designation: 'General Manager - Communications', department: 'Communications' },
+  { name: 'Mazhar Iqbal', designation: 'Senior Manager - MEAL', department: 'Evaluation & Monitoring' },
+  { name: 'Seema Sarfraz', designation: 'Assistant Manager - MEAL', department: 'Evaluation & Monitoring' },
+  { name: 'Syed Muhammad Saif Zaidi', designation: 'Financial Advisor', department: 'Finance' },
+  { name: 'Fahad Ali Khan', designation: 'Dot Net Developer', department: 'Information & Digital Services' },
+  { name: 'Mian Muhammad Ramzan', designation: 'React Native Developer', department: 'Information & Digital Services' },
+  { name: 'Yasir Hasnain', designation: 'Manager - Enterprise Resource Planning & Applications', department: 'Information & Digital Services' },
+  { name: 'Shaikh Nadir Hussain', designation: 'Chief Information and Digital Officer', department: 'Information & Digital Services' },
+  { name: 'Muhammad Saad Muneer', designation: 'Analyst - Data & Reporting', department: 'Operation-EMS' },
+  { name: 'Ali Raza Bhatti', designation: 'Assistant Manager - Projects', department: 'Operation-EMS' },
+  { name: 'Lutaf Ali', designation: 'Director - Operations, TeleTabeeb & Command and Control Center', department: 'Operation-EMS' },
+  { name: 'Sameer Ahmed Khan', designation: 'Assistant Manager - Data & Reporting', department: 'Operation-EMS' },
+  { name: 'Elishba John', designation: 'General Manager - People & Culture', department: 'People & Culture' },
+  { name: 'Ali Akbar Jhandeer', designation: 'General Manager - Administration & Security', department: 'Support Wing' },
+];
+
 function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
   const vantaRef = useRef<HTMLDivElement>(null);
@@ -31,7 +51,7 @@ function HomepageHeader() {
             scale: 1.0,
             scaleMobile: 1.0,
             color: 0xffffff,
-            backgroundColor: 0x1e88e5, // Blue for healthcare
+            backgroundColor: 0x1e88e5,
             points: 10.0,
             maxDistance: 20.0,
             spacing: 16.0,
@@ -106,17 +126,13 @@ function HomepageHeader() {
               height="280"
               className={styles.siehsIcon}
             >
-              {/* Healthcare AI Icon */}
               <circle cx="100" cy="100" r="90" fill="rgba(255,255,255,0.1)" stroke="white" strokeWidth="2"/>
-              {/* Cross symbol */}
               <rect x="85" y="50" width="30" height="100" rx="5" fill="white"/>
               <rect x="50" y="85" width="100" height="30" rx="5" fill="white"/>
-              {/* AI nodes */}
               <circle cx="40" cy="40" r="10" fill="rgba(255,255,255,0.8)"/>
               <circle cx="160" cy="40" r="10" fill="rgba(255,255,255,0.8)"/>
               <circle cx="40" cy="160" r="10" fill="rgba(255,255,255,0.8)"/>
               <circle cx="160" cy="160" r="10" fill="rgba(255,255,255,0.8)"/>
-              {/* Connection lines */}
               <line x1="50" y1="50" x2="85" y2="85" stroke="rgba(255,255,255,0.5)" strokeWidth="2"/>
               <line x1="150" y1="50" x2="115" y2="85" stroke="rgba(255,255,255,0.5)" strokeWidth="2"/>
               <line x1="50" y1="150" x2="85" y2="115" stroke="rgba(255,255,255,0.5)" strokeWidth="2"/>
@@ -172,14 +188,14 @@ function TrainingDays(): ReactNode {
       description: 'Master the art of communicating with AI systems effectively.',
       topics: [
         'Understanding LLMs & Generative AI',
-        'Zero-shot & Few-shot Prompting',
+        'Six-Part Prompting Framework',
+        'Context Engineering',
         'Chain of Thought Reasoning',
-        'Role-based Prompting',
         'SIEHS Use Case Workshop'
       ],
       deliverable: 'Personal Prompt Library (5+ templates)',
       link: '/docs/day1',
-      color: '#1e88e5', // Blue
+      color: '#1e88e5',
     },
     {
       day: 2,
@@ -194,7 +210,7 @@ function TrainingDays(): ReactNode {
       ],
       deliverable: 'Working Email Automation Workflow',
       link: '/docs/day2',
-      color: '#43a047', // Green
+      color: '#43a047',
     },
     {
       day: 3,
@@ -209,7 +225,7 @@ function TrainingDays(): ReactNode {
       ],
       deliverable: 'Live Deployed SIEHS Chatbot',
       link: '/docs/day3',
-      color: '#e53935', // Red
+      color: '#e53935',
     },
   ];
 
@@ -232,46 +248,54 @@ function TrainingDays(): ReactNode {
   );
 }
 
-function Audience(): ReactNode {
-  const audiences = [
-    {
-      title: 'Healthcare Leaders',
-      icon: '🏥',
-      description: 'Directors, managers, and supervisors responsible for healthcare delivery and operations.'
-    },
-    {
-      title: 'Emergency Services',
-      icon: '🚑',
-      description: 'Emergency response coordinators and 1122 service managers seeking efficiency improvements.'
-    },
-    {
-      title: 'IT & Digital Teams',
-      icon: '💻',
-      description: 'Technology leads looking to implement AI solutions across SIEHS departments.'
-    },
-    {
-      title: 'Administrative Staff',
-      icon: '📋',
-      description: 'Operations and administrative personnel who want to automate routine tasks.'
-    },
-  ];
+function Participants(): ReactNode {
+  // Group participants by department
+  const departments = participants.reduce((acc, p) => {
+    if (!acc[p.department]) acc[p.department] = [];
+    acc[p.department].push(p);
+    return acc;
+  }, {} as Record<string, typeof participants>);
 
   return (
-    <section className={styles.audience}>
+    <section className={styles.participants}>
       <div className="container">
         <Heading as="h2" className="text--center margin-bottom--lg">
-          Who Is This Training For?
+          Training Participants
         </Heading>
-        <div className="row">
-          {audiences.map((item, idx) => (
-            <div key={idx} className="col col--3 margin-bottom--lg">
-              <div className={styles.audienceCard}>
-                <div className={styles.audienceIcon}>{item.icon}</div>
-                <Heading as="h4">{item.title}</Heading>
-                <p>{item.description}</p>
-              </div>
-            </div>
-          ))}
+        <p className="text--center margin-bottom--lg">
+          16 SIEHS leaders from across departments joining this training program
+        </p>
+        <div className={styles.participantTable}>
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Designation</th>
+                <th>Department</th>
+              </tr>
+            </thead>
+            <tbody>
+              {participants.map((p, idx) => (
+                <tr key={idx}>
+                  <td>{idx + 1}</td>
+                  <td><strong>{p.name}</strong></td>
+                  <td>{p.designation}</td>
+                  <td>{p.department}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className={styles.departmentSummary}>
+          <Heading as="h4" className="text--center margin-top--lg">Departments Represented</Heading>
+          <div className={styles.departmentTags}>
+            {Object.entries(departments).map(([dept, members]) => (
+              <span key={dept} className={styles.departmentTag}>
+                {dept} ({members.length})
+              </span>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -306,12 +330,12 @@ function SIEHSContext(): ReactNode {
                 <div className={styles.statLabel}>Training Days</div>
               </div>
               <div className={styles.statCard}>
-                <div className={styles.statNumber}>24</div>
-                <div className={styles.statLabel}>Hours Total</div>
+                <div className={styles.statNumber}>16</div>
+                <div className={styles.statLabel}>Participants</div>
               </div>
               <div className={styles.statCard}>
-                <div className={styles.statNumber}>15+</div>
-                <div className={styles.statLabel}>Modules</div>
+                <div className={styles.statNumber}>6</div>
+                <div className={styles.statLabel}>Departments</div>
               </div>
               <div className={styles.statCard}>
                 <div className={styles.statNumber}>5+</div>
@@ -335,7 +359,7 @@ export default function Home(): ReactNode {
       <main>
         <SIEHSContext />
         <TrainingDays />
-        <Audience />
+        <Participants />
       </main>
     </Layout>
   );

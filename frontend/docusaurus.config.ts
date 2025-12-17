@@ -121,12 +121,12 @@ const config: Config = {
           title: 'Resources',
           items: [
             {
-              label: 'SIEHS',
+              label: 'SIEHS Official',
               href: 'https://www.siehs.org',
             },
             {
-              label: 'Panaversity',
-              href: 'https://panaversity.org',
+              label: '1122 Emergency',
+              href: 'https://www.siehs.org',
             },
           ],
         },

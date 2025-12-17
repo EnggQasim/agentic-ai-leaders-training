@@ -349,3 +349,91 @@
     flex-direction: column-reverse;
   }
 }
+
+/* Participants Section */
+.participants {
+  padding: 4rem 0;
+  background: linear-gradient(180deg, var(--ifm-background-surface-color) 0%, rgba(30, 136, 229, 0.05) 100%);
+}
+
+.participantTable {
+  overflow-x: auto;
+  margin: 0 auto;
+  max-width: 900px;
+}
+
+.participantTable table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--ifm-card-background-color);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.participantTable th {
+  background: var(--ifm-color-primary);
+  color: white;
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+}
+
+.participantTable td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.participantTable tr:last-child td {
+  border-bottom: none;
+}
+
+.participantTable tr:hover {
+  background: rgba(30, 136, 229, 0.05);
+}
+
+.departmentSummary {
+  margin-top: 2rem;
+}
+
+.departmentTags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.departmentTag {
+  background: var(--ifm-color-primary);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+[data-theme='dark'] .participantTable th {
+  background: var(--ifm-color-primary-dark);
+}
+
+[data-theme='dark'] .participantTable td {
+  border-bottom-color: var(--ifm-color-emphasis-300);
+}
+
+@media screen and (max-width: 768px) {
+  .participants {
+    padding: 2rem 0;
+  }
+
+  .participantTable th,
+  .participantTable td {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .departmentTag {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
+  }
+}

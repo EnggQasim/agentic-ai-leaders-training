@@ -12,8 +12,9 @@ Welcome to Day 1 of the SIEHS Agentic AI Training! Today you'll learn how to com
 By the end of Day 1, you will be able to:
 
 - Understand what Large Language Models (LLMs) are and how they work
-- Apply zero-shot and few-shot prompting techniques
-- Use chain-of-thought reasoning for complex problems
+- Apply the **Six-Part Prompting Framework** for 10x better results
+- Master **Context Engineering** for building AI systems
+- Use zero-shot, few-shot, and chain-of-thought techniques
 - Configure AI parameters for different use cases
 - Create a personal prompt library for SIEHS tasks
 
@@ -26,6 +27,8 @@ By the end of Day 1, you will be able to:
 - SIEHS AI Opportunity Landscape
 
 ### Module 2: Prompt Engineering Fundamentals
+- [**Six-Part Prompting Framework**](./module-2-fundamentals/six-part-framework) - Command, Context, Logic, Roleplay, Formatting, Questions
+- [**Context Engineering**](./module-2-fundamentals/context-engineering) - Building AI systems with the right context
 - Zero-Shot Prompting
 - One-Shot and Few-Shot Prompting
 - System Prompts and Context
@@ -53,6 +56,13 @@ By the end of Day 1, you will be able to:
 - Training Content Generation
 - **Project**: Build Your Prompt Library
 
+## Key Frameworks
+
+| Framework | Purpose | Key Concept |
+|-----------|---------|-------------|
+| **Six-Part Framework** | Structuring prompts | Command → Context → Logic → Roleplay → Format → Questions |
+| **Context Engineering** | Building AI systems | Right information, right format, right time |
+
 ## Deliverable
 
 **Personal Prompt Library**: A collection of 5+ tested prompt templates for your SIEHS department.
@@ -63,4 +73,4 @@ By the end of Day 1, you will be able to:
 
 ---
 
-*Content coming soon. This training material is under development.*
+**Start with Module 2** to learn the Six-Part Prompting Framework and Context Engineering fundamentals!
