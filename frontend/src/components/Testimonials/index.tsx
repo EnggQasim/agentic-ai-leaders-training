@@ -229,13 +229,10 @@ export default function Testimonials(): JSX.Element {
         <div className="container">
           <h2 className={styles.sectionTitle}>What Participants Say</h2>
           <p className={styles.sectionSubtitle}>
-            Feedback from our training participants will appear here after they submit their evaluations.
+            Feedback from our training participants will appear here.
           </p>
           <div className={styles.noTestimonials}>
-            <p>Be the first to share your feedback!</p>
-            <a href="/evaluation" className={styles.feedbackButton}>
-              Submit Your Feedback
-            </a>
+            <p>No feedback available yet.</p>
           </div>
         </div>
       </section>
@@ -262,13 +259,6 @@ export default function Testimonials(): JSX.Element {
             ))}
           </div>
         )}
-
-        <div className={styles.ctaSection}>
-          <p>Completed the training? Share your experience!</p>
-          <a href="/evaluation" className={styles.feedbackButton}>
-            Submit Your Feedback
-          </a>
-        </div>
       </div>
     </section>
   );
