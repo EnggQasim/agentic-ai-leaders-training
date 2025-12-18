@@ -25,7 +25,7 @@ By the end of Day 3, you will be able to:
 - OpenAI Node Configuration
 - Prompt Engineering for Auto-Responses
 - Escalation Logic (Emergency Detection)
-- **Project**: SIEHS Auto-Responder
+- **[Tutorial: AI Auto Email Responder](./tutorials/auto-email-responder)** - Build your first AI-powered automation
 
 ### Module 2: OpenAI AgentKit
 - What Are AI Agents?
@@ -73,4 +73,10 @@ By the end of Day 3, you will be able to:
 
 ---
 
-*Content coming soon. This training material is under development.*
+## Hands-On Tutorial
+
+| Tutorial | Description | Duration |
+|----------|-------------|----------|
+| [**AI Auto Email Responder**](./tutorials/auto-email-responder) | Build n8n workflow with Gmail + OpenAI for intelligent auto-replies | 90 min |
+
+Start with the AI Auto Email Responder tutorial to combine your Day 2 n8n skills with OpenAI integration!
