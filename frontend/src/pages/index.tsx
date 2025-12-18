@@ -10,6 +10,7 @@ import * as THREE from 'three';
 
 import styles from './index.module.css';
 import Testimonials from '@site/src/components/Testimonials';
+import Gallery from '@site/src/components/Gallery';
 
 // Participant data
 const participants = [
@@ -360,6 +361,7 @@ export default function Home(): ReactNode {
       <main>
         <SIEHSContext />
         <TrainingDays />
+        <Gallery />
         <Testimonials />
         <Participants />
       </main>
