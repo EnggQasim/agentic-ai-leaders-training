@@ -6,7 +6,6 @@ interface Testimonial {
   designation: string;
   department: string;
   linkedin: string;
-  photoUrl: string;
   comment: string;
   rating: number;
 }
@@ -19,7 +18,6 @@ const sampleTestimonials: Testimonial[] = [
     designation: '',
     department: '',
     linkedin: '',
-    photoUrl: '',
     comment: 'Fetching testimonials from feedback...',
     rating: 5,
   },
@@ -56,12 +54,26 @@ function getColorFromName(name: string): string {
   return colors[Math.abs(hash) % colors.length];
 }
 
-// Function to generate avatar URL with personalized colors
-function getAvatarUrl(name: string): string {
+// Function to generate fallback avatar URL with personalized colors
+function getFallbackAvatarUrl(name: string): string {
   const bgColor = getColorFromName(name);
 
   // Use UI Avatars service with personalized background color
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&size=150&background=${bgColor}&color=ffffff&bold=true&rounded=true`;
+}
+
+// Function to get LinkedIn profile picture using unavatar.io service
+function getLinkedInAvatarUrl(linkedinUrl: string, name: string): string {
+  const username = getLinkedInUsername(linkedinUrl);
+
+  if (username) {
+    // Use unavatar.io to fetch LinkedIn profile picture
+    // It tries multiple sources including LinkedIn
+    return `https://unavatar.io/linkedin/${username}?fallback=https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&size=150&background=${getColorFromName(name)}&color=ffffff&bold=true`;
+  }
+
+  // Fallback to generated avatar if no LinkedIn URL
+  return getFallbackAvatarUrl(name);
 }
 
 // Star rating component
@@ -80,36 +92,9 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
-// Convert Google Drive share link to direct image URL
-function getDirectImageUrl(url: string): string {
-  if (!url) return '';
-
-  // Handle Google Drive links
-  // Format: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
-  // Convert to: https://drive.google.com/uc?export=view&id=FILE_ID
-  const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^\/]+)/);
-  if (driveMatch) {
-    return `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
-  }
-
-  // Handle Google Drive open links
-  // Format: https://drive.google.com/open?id=FILE_ID
-  const openMatch = url.match(/drive\.google\.com\/open\?id=([^&]+)/);
-  if (openMatch) {
-    return `https://drive.google.com/uc?export=view&id=${openMatch[1]}`;
-  }
-
-  // Return as-is for other URLs (Imgur, direct links, etc.)
-  return url;
-}
-
 function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
-  const linkedinUsername = getLinkedInUsername(testimonial.linkedin);
-
-  // Use photo URL if provided, otherwise fallback to generated avatar
-  const avatarSrc = testimonial.photoUrl
-    ? getDirectImageUrl(testimonial.photoUrl)
-    : getAvatarUrl(testimonial.name);
+  // Get LinkedIn profile picture or fallback to generated avatar
+  const avatarSrc = getLinkedInAvatarUrl(testimonial.linkedin, testimonial.name);
 
   return (
     <div className={styles.testimonialCard}>
@@ -121,7 +106,7 @@ function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
             className={styles.avatar}
             onError={(e) => {
               // Fallback to generated avatar if image fails to load
-              (e.target as HTMLImageElement).src = getAvatarUrl(testimonial.name);
+              (e.target as HTMLImageElement).src = getFallbackAvatarUrl(testimonial.name);
             }}
           />
           {testimonial.linkedin && (
@@ -186,7 +171,7 @@ export default function Testimonials(): JSX.Element {
 
         // Skip header row and filter valid testimonials
         // Column indexes based on feedback sheet:
-        // 1=Name, 2=Designation, 3=Department, 5=LinkedIn, 6=PhotoUrl, 17=Overall Satisfied
+        // 1=Name, 2=Designation, 3=Department, 5=LinkedIn, 17=Overall Satisfied
         // 24=Future Topics, 25=Best About Session, 26=Suggestions, 27=Other Comments
         const validTestimonials = rows.slice(1)
           .filter(row => row[1] && (row[24] || row[25] || row[26])) // Has name and has any comment
@@ -195,7 +180,6 @@ export default function Testimonials(): JSX.Element {
             designation: row[2] || '',
             department: row[3] || '',
             linkedin: row[5] || '',
-            photoUrl: row[6] || '',
             comment: row[24] || row[25] || row[26] || 'Great training program!',
             rating: parseInt(row[17]) || 1,
           }))

@@ -9,7 +9,6 @@ interface FormData {
   department: string;
   email: string;
   linkedinProfile: string;
-  photoUrl: string;
 
   // Program Info
   programName: string;
@@ -49,7 +48,6 @@ const initialFormData: FormData = {
   department: '',
   email: '',
   linkedinProfile: '',
-  photoUrl: '',
   programName: 'Agentic AI Leaders Training',
   venue: 'SIEHS – HO – Board Room',
   trainer: 'Muhammad Qasim',
@@ -311,23 +309,7 @@ Other comments: ${data.otherComments || 'N/A'}
               placeholder="https://linkedin.com/in/yourprofile"
             />
             <small className={styles.helpText}>
-              Share your LinkedIn profile to connect with fellow participants
-            </small>
-          </div>
-          <div className={styles.formGroup + ' ' + styles.fullWidth}>
-            <label htmlFor="photoUrl">
-              Profile Photo URL (Optional)
-            </label>
-            <input
-              type="url"
-              id="photoUrl"
-              name="photoUrl"
-              value={formData.photoUrl}
-              onChange={handleInputChange}
-              placeholder="https://drive.google.com/... or any image URL"
-            />
-            <small className={styles.helpText}>
-              Upload your photo to Google Drive (make it public) or use any image hosting service and paste the link here. Your photo will appear in testimonials.
+              Share your LinkedIn profile to connect with fellow participants and display your profile picture in testimonials
             </small>
           </div>
         </div>
