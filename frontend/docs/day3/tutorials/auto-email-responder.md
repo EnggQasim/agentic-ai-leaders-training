@@ -5,27 +5,35 @@ title: "Tutorial: AI Auto Email Responder"
 
 # Tutorial: Building an AI-Powered Auto Email Responder
 
-In this tutorial, you'll build an intelligent email auto-responder using n8n that automatically reads incoming emails, generates AI-powered responses using OpenAI, and sends personalized replies. This is a key Day 3 deliverable that combines your Day 2 n8n skills with AI.
+In this tutorial, you'll build an intelligent email auto-responder using n8n that automatically reads incoming emails, generates AI-powered responses, and sends personalized replies. This is a key Day 3 deliverable that combines your Day 2 n8n skills with AI.
+
+:::tip Two Approaches Available
+This tutorial covers **two approaches**:
+1. **Basic Approach**: OpenAI Chat node (simpler, paid API)
+2. **Advanced Approach**: AI Agent with Google Gemini + Structured Output (more powerful, free tier available)
+
+Choose based on your needs and budget!
+:::
 
 ## What You'll Build
 
 An automated workflow that:
 1. Triggers when new emails arrive in Gmail
 2. Reads and analyzes the email content
-3. Uses OpenAI to generate a contextual response
+3. Uses AI to generate a contextual response with sentiment analysis
 4. Sends the AI-generated reply automatically
-5. Logs the interaction for monitoring
+5. Tracks follow-up requirements
 
 ```
-[Gmail Trigger] → [OpenAI] → [Gmail Send] → [Google Sheets Log]
+[Gmail Trigger] → [AI Agent] → [Gmail Send]
 ```
 
 ## Prerequisites
 
 - Completed Day 2 tutorials (n8n basics, Gmail integration)
 - n8n account with Gmail credentials configured
-- OpenAI API key (we'll set this up)
-- Google Sheet for logging (optional but recommended)
+- **Option A**: OpenAI API key (paid)
+- **Option B**: Google Gemini API key (free tier available)
 
 ---
 
@@ -52,6 +60,39 @@ An automated workflow that:
 
 :::warning Important
 Keep your API key secret! Never share it or commit it to code repositories.
+:::
+
+---
+
+## Part 1B: Google Gemini Setup (Alternative - Free Tier)
+
+Google Gemini offers a **free tier** that's perfect for testing and low-volume use.
+
+### Step 1B.1: Get Gemini API Key
+
+1. Go to [Google AI Studio](https://aistudio.google.com/)
+2. Sign in with your Google account
+3. Click **"Get API Key"** in the left sidebar
+4. Click **"Create API Key"**
+5. Select a Google Cloud project or create a new one
+6. **Copy the API key immediately**
+
+### Step 1B.2: Free Tier Limits
+
+| Feature | Free Tier Limit |
+|---------|-----------------|
+| **Requests per minute** | 60 |
+| **Requests per day** | 1,500 |
+| **Tokens per minute** | 32,000 |
+
+:::tip Cost Comparison
+| Provider | Free Tier | Paid Rate |
+|----------|-----------|-----------|
+| Google Gemini | 1,500 requests/day FREE | $0.075/1M tokens |
+| OpenAI GPT-4o-mini | None | $0.15/1M input tokens |
+| OpenAI GPT-4o | None | $5/1M input tokens |
+
+**Recommendation**: Start with Gemini's free tier for development and testing!
 :::
 
 ---
@@ -275,6 +316,187 @@ Gmail Trigger → OpenAI → Gmail Send → Google Sheets
 
 ---
 
+## Part 2B: Advanced AI Agent Approach (Recommended)
+
+This approach uses n8n's **AI Agent** node with **Google Gemini** and **Structured Output Parser** for more intelligent responses with sentiment analysis.
+
+### Why Use AI Agent?
+
+| Feature | Basic OpenAI | AI Agent + Gemini |
+|---------|--------------|-------------------|
+| **Cost** | Paid only | Free tier available |
+| **Output Format** | Plain text | Structured JSON |
+| **Sentiment Analysis** | Manual | Automatic |
+| **Follow-up Detection** | Manual | Built-in |
+| **Flexibility** | Limited | Highly customizable |
+
+### Step 2B.1: Add Gmail Trigger (Same as Basic)
+
+Follow Step 2.2 above to add the Gmail Trigger with:
+- **Poll Times**: Every Minute
+- **Credential**: Your Gmail OAuth2
+
+### Step 2B.2: Add AI Agent Node
+
+The AI Agent node is a LangChain-powered node for advanced AI workflows.
+
+#### Instructions:
+
+1. Click **"+"** to the right of Gmail Trigger
+2. Search for **"AI Agent"**
+3. Click to add it
+
+#### Node Configuration:
+
+| Setting | Value |
+|---------|-------|
+| **Prompt Type** | Define |
+| **Text** | See below |
+| **Has Output Parser** | ON ✓ |
+
+#### Input Text (Expression):
+
+```
+email title: {{ $json.Subject }}
+email body: {{ $json.snippet }}
+sender email: {{ $json.From }}
+```
+
+#### System Message:
+
+```
+You are an AI email auto-reply assistant.
+
+Your task is to:
+1. Read the incoming email carefully
+2. Analyze the sentiment and content
+3. Generate an appropriate professional reply
+4. Determine if follow-up action is needed
+
+Provide your response in the structured format with:
+- reply_subject: A suitable subject line for the reply
+- reply_body: A professional, contextually appropriate email response
+- sentiment: The sentiment of the original email (positive, neutral, or negative)
+- requires_followup: Boolean indicating if this email needs further action
+- from_email: sender email address
+```
+
+### Step 2B.3: Add Google Gemini Chat Model
+
+Connect the language model to the AI Agent.
+
+#### Instructions:
+
+1. Hover over AI Agent node
+2. Click the **"+"** below the node (sub-nodes area)
+3. Search for **"Google Gemini Chat Model"**
+4. Click to add it
+
+#### Create Gemini Credentials:
+
+1. Click **"Create New Credential"**
+2. Select **"Google Gemini (PaLM) API"**
+3. Paste your Gemini API key from Part 1B
+4. Click **Save**
+
+#### Node Configuration:
+
+| Setting | Value |
+|---------|-------|
+| **Model** | gemini-1.5-flash (fast) or gemini-1.5-pro (better) |
+| **Options** | Leave defaults |
+
+### Step 2B.4: Add Structured Output Parser
+
+This ensures consistent JSON responses from the AI.
+
+#### Instructions:
+
+1. Click **"+"** in the AI Agent sub-nodes area
+2. Search for **"Structured Output Parser"**
+3. Click to add it
+
+#### JSON Schema Example:
+
+```json
+{
+  "reply_subject": "Re: Original Subject",
+  "reply_body": "Professional email reply text here",
+  "sentiment": "positive",
+  "requires_followup": false,
+  "sender_email": "sender@example.com"
+}
+```
+
+#### What the AI Agent Returns:
+
+```json
+{
+  "output": {
+    "reply_subject": "Re: Your Inquiry About SIEHS Services",
+    "reply_body": "Dear Citizen,\n\nThank you for reaching out to SIEHS...",
+    "sentiment": "neutral",
+    "requires_followup": false,
+    "sender_email": "citizen@example.com"
+  }
+}
+```
+
+### Step 2B.5: Add Gmail Send Node (Structured Output)
+
+Send the AI-generated reply using structured output fields.
+
+#### Node Configuration:
+
+| Setting | Value |
+|---------|-------|
+| **Resource** | Message |
+| **Operation** | Send |
+| **To** | `{{ $json.output.sender_email }}` |
+| **Subject** | `{{ $json.output.reply_subject }}` |
+| **Message** | `{{ $json.output.reply_body }}` |
+
+### Step 2B.6: Complete AI Agent Workflow
+
+Your workflow should look like this:
+
+```
+┌─────────────────┐
+│  Gmail Trigger  │
+│ (Every Minute)  │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────────────────────────┐
+│           AI Agent                   │
+│  ┌─────────────┐ ┌────────────────┐ │
+│  │Google Gemini│ │Structured Parser│ │
+│  │ Chat Model  │ │   (JSON out)    │ │
+│  └─────────────┘ └────────────────┘ │
+└────────────────┬────────────────────┘
+                 │
+                 ▼
+         ┌───────────────┐
+         │  Gmail Send   │
+         │ (Auto Reply)  │
+         └───────────────┘
+```
+
+### Step 2B.7: Using Sentiment Data
+
+The structured output includes sentiment analysis you can use for:
+
+#### Example: Route Negative Emails to Human
+
+Add an **IF** node after AI Agent:
+
+| Condition | Action |
+|-----------|--------|
+| `{{ $json.output.sentiment }}` equals "negative" | Forward to supervisor |
+| `{{ $json.output.requires_followup }}` equals true | Add to follow-up queue |
+
+---
+
 ## Part 3: Add Emergency Detection
 
 Enhance the workflow to handle emergencies differently.
@@ -448,11 +670,13 @@ Create alerts for:
 | Concept | Description |
 |---------|-------------|
 | **Gmail Trigger** | Monitor inbox for new messages |
-| **OpenAI Integration** | Generate AI responses |
+| **AI Agent Node** | LangChain-powered advanced AI processing |
+| **Google Gemini** | Free-tier language model alternative |
+| **Structured Output Parser** | Ensure consistent JSON responses |
+| **Sentiment Analysis** | Automatic email tone detection |
 | **System Prompts** | Control AI behavior and tone |
-| **Conditional Logic** | Route emails based on content |
+| **Conditional Logic** | Route emails based on content/sentiment |
 | **Expression References** | Access data from other nodes |
-| **Logging** | Track all automated interactions |
 
 ---
 
@@ -470,12 +694,17 @@ Create alerts for:
 
 ## Cost Estimation
 
-| Model | Cost per 1K tokens | Avg email (300 tokens) | 100 emails/day |
-|-------|-------------------|----------------------|----------------|
-| gpt-4o-mini | $0.00015 input / $0.0006 output | ~$0.0002 | ~$0.60/month |
-| gpt-4o | $0.005 input / $0.015 output | ~$0.006 | ~$18/month |
+| Model | Cost | Avg email (300 tokens) | 100 emails/day |
+|-------|------|----------------------|----------------|
+| **Google Gemini 1.5 Flash** | FREE (1,500/day) | $0.00 | **$0/month** |
+| **Google Gemini 1.5 Pro** | FREE (50/day) | $0.00 | $0/month (paid beyond) |
+| gpt-4o-mini | $0.15/1M input, $0.60/1M output | ~$0.0002 | ~$0.60/month |
+| gpt-4o | $5/1M input, $15/1M output | ~$0.006 | ~$18/month |
 
-**Recommendation**: Start with `gpt-4o-mini` for cost efficiency.
+:::tip Recommendation
+**Start with Google Gemini 1.5 Flash** - it's FREE and handles 1,500 emails/day!
+Only consider OpenAI if you need specific GPT features.
+:::
 
 ---
 
@@ -491,14 +720,24 @@ Create alerts for:
 - Add example responses in the prompt
 - Lower temperature for more consistent outputs
 
+### AI Agent not returning structured output?
+- Verify the Structured Output Parser is connected to the AI Agent
+- Check that the JSON schema example matches expected fields
+- Ensure "Has Output Parser" is ON in AI Agent settings
+
+### Google Gemini API errors?
+- Verify API key is correct in credentials
+- Check if you've exceeded free tier limits (1,500/day for Flash)
+- Try switching between gemini-1.5-flash and gemini-1.5-pro
+
 ### High costs?
-- Switch to gpt-4o-mini
+- **Switch to Google Gemini** - it's FREE for most use cases!
 - Add character limits in responses
 - Filter out spam/automated emails
 
 ### Emails not sending?
 - Check Gmail send permissions
-- Verify "To" address expression is correct
+- For AI Agent: verify expression is `{{ $json.output.sender_email }}` not `{{ $json.sender_email }}`
 - Check for sending limits
 
 ---
@@ -527,8 +766,23 @@ Create alerts for:
 
 You've built an AI-powered email auto-responder that:
 - Monitors incoming emails automatically
-- Generates intelligent, contextual responses
+- Uses **AI Agent** with **Google Gemini** (FREE!) or OpenAI
+- Generates **structured responses** with sentiment analysis
+- Detects follow-up requirements automatically
 - Handles emergencies appropriately
-- Logs all interactions for review
+- Routes emails based on content and sentiment
 
 This is your **Day 3 Module 1 Deliverable** - a production-ready AI automation!
+
+---
+
+## Quick Reference: Which Approach?
+
+| Scenario | Recommended Approach |
+|----------|---------------------|
+| **Learning/Testing** | AI Agent + Gemini (FREE) |
+| **Production (< 1,500 emails/day)** | AI Agent + Gemini Flash (FREE) |
+| **Production (high volume)** | AI Agent + Gemini Pro (paid) or OpenAI |
+| **Need GPT-specific features** | Basic OpenAI approach |
+| **Need sentiment analysis** | AI Agent + Structured Output |
+| **Simple auto-replies only** | Basic OpenAI approach |
