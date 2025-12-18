@@ -77,6 +77,9 @@ const ratingLabels = {
   '4': 'Not at all Satisfied',
 };
 
+// Google Apps Script Web App URL for form submissions
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwnjKIz0uFKpS7dP-jbWHOqHxvhC8rm-8ODdMJFZJVWbLTKCr2_FY9rOMcYHvfzx1HbGg/exec';
+
 export default function EvaluationForm(): JSX.Element {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [submitted, setSubmitted] = useState(false);
@@ -125,21 +128,27 @@ export default function EvaluationForm(): JSX.Element {
     setSubmitting(true);
 
     try {
-      // Create mailto link or webhook submission
-      const emailBody = generateEmailBody(formData);
-      const mailtoLink = `mailto:training@siehs.org?subject=Training Evaluation - ${formData.participantName}&body=${encodeURIComponent(emailBody)}`;
-
-      // Also save to localStorage for backup
+      // Save to localStorage for backup first
       const submissions = JSON.parse(localStorage.getItem('evaluationSubmissions') || '[]');
       submissions.push({ ...formData, submittedAt: new Date().toISOString() });
       localStorage.setItem('evaluationSubmissions', JSON.stringify(submissions));
 
-      // Open email client
-      window.location.href = mailtoLink;
+      // Submit to Google Sheets via Apps Script
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors', // Required for Google Apps Script
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
 
+      // With no-cors mode, we can't read the response, but the request is sent
+      // The submission is considered successful if no error is thrown
       setSubmitted(true);
     } catch (err) {
-      setError('An error occurred. Please try again.');
+      console.error('Submission error:', err);
+      setError('An error occurred. Your response has been saved locally. Please try again or contact support.');
     } finally {
       setSubmitting(false);
     }
@@ -205,7 +214,10 @@ Other comments: ${data.otherComments || 'N/A'}
         <div className={styles.successIcon}>✓</div>
         <h2>Thank You!</h2>
         <p>Your evaluation has been submitted successfully.</p>
-        <p>Your email client should open with the evaluation details. Please click Send to complete the submission.</p>
+        <p>Your feedback has been recorded and will help us improve future training programs.</p>
+        <p style={{ fontSize: '0.9rem', color: 'var(--ifm-color-gray-600)', marginTop: '1rem' }}>
+          We appreciate you taking the time to share your thoughts!
+        </p>
         <button
           className={styles.submitButton}
           onClick={() => { setSubmitted(false); setFormData(initialFormData); }}
