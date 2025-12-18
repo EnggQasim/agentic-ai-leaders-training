@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './styles.module.css';
 
 interface GalleryImage {
@@ -7,7 +8,7 @@ interface GalleryImage {
   caption: string;
 }
 
-const galleryImages: GalleryImage[] = [
+const galleryImagesData = [
   {
     src: '/img/gallery/training-3.jpeg',
     alt: 'Certificate Distribution Ceremony',
@@ -52,6 +53,33 @@ function ImageModal({
   );
 }
 
+function GalleryImageCard({
+  image,
+  onClick
+}: {
+  image: typeof galleryImagesData[0];
+  onClick: (img: GalleryImage) => void;
+}) {
+  const imageSrc = useBaseUrl(image.src);
+
+  return (
+    <div
+      className={styles.imageCard}
+      onClick={() => onClick({ ...image, src: imageSrc })}
+    >
+      <img
+        src={imageSrc}
+        alt={image.alt}
+        className={styles.image}
+        loading="lazy"
+      />
+      <div className={styles.imageOverlay}>
+        <p className={styles.imageCaption}>{image.caption}</p>
+      </div>
+    </div>
+  );
+}
+
 export default function Gallery(): JSX.Element {
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
 
@@ -77,22 +105,12 @@ export default function Gallery(): JSX.Element {
 
         {/* Image Gallery */}
         <div className={styles.imageGrid}>
-          {galleryImages.map((image, idx) => (
-            <div
+          {galleryImagesData.map((image, idx) => (
+            <GalleryImageCard
               key={idx}
-              className={styles.imageCard}
-              onClick={() => setSelectedImage(image)}
-            >
-              <img
-                src={image.src}
-                alt={image.alt}
-                className={styles.image}
-                loading="lazy"
-              />
-              <div className={styles.imageOverlay}>
-                <p className={styles.imageCaption}>{image.caption}</p>
-              </div>
-            </div>
+              image={image}
+              onClick={setSelectedImage}
+            />
           ))}
         </div>
       </div>
