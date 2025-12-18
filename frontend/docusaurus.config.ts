@@ -87,6 +87,11 @@ const config: Config = {
           label: 'Training',
         },
         {
+          to: '/evaluation',
+          label: 'Feedback',
+          position: 'left',
+        },
+        {
           type: 'localeDropdown',
           position: 'right',
         },
