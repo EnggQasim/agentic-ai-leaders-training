@@ -78,7 +78,9 @@ const ratingLabels = {
 };
 
 // Google Apps Script Web App URL for form submissions
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwnjKIz0uFKpS7dP-jbWHOqHxvhC8rm-8ODdMJFZJVWbLTKCr2_FY9rOMcYHvfzx1HbGg/exec';
+// Sheet: https://docs.google.com/spreadsheets/d/1zppcLNd-ClDtz63E2hlAwhSPobOMaiXFEXF4eiJIDRs/
+// Data saves to 'feedback' sheet tab
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzLLEDlGUXtCr0_vJpL5P3zdW7RUqOHbkP3Y-E_mhz1_qglLfQHbnkl0YEBXJbJpfE/exec';
 
 export default function EvaluationForm(): JSX.Element {
   const [formData, setFormData] = useState<FormData>(initialFormData);
