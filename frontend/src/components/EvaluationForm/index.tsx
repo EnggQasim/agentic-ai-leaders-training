@@ -80,7 +80,7 @@ const ratingLabels = {
 // Google Apps Script Web App URL for form submissions
 // Sheet: https://docs.google.com/spreadsheets/d/1zppcLNd-ClDtz63E2hlAwhSPobOMaiXFEXF4eiJIDRs/
 // Data saves to 'feedback' sheet tab
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzLLEDlGUXtCr0_vJpL5P3zdW7RUqOHbkP3Y-E_mhz1_qglLfQHbnkl0YEBXJbJpfE/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyArW58MJtcJ9iS-oQvP8uheSUG-xjzq6EpOfs0TJxnH2w7Qf-v4PY80qFyEQnv-44r/exec';
 
 export default function EvaluationForm(): JSX.Element {
   const [formData, setFormData] = useState<FormData>(initialFormData);
