@@ -30,24 +30,24 @@ By the end of Day 3, you will be able to:
 ### Module 2: OpenAI AgentKit
 - What Are AI Agents?
 - OpenAI Account Setup
-- Assistants Playground Tour
-- Configure Agent Instructions
+- Agent Builder Playground Tour
+- Configure Agent Instructions & Tools
 - Adding Knowledge Bases
-- **Exercise**: SIEHS FAQ Agent
+- **[Tutorial: Weather Agent with AgentKit](./tutorials/agentkit-weather-agent)** - Build your first AI Agent
 
 ### Module 3: ChatKit Widget
 - Chat UI Overview
-- Vercel AI SDK Introduction
+- ChatKit Architecture
 - Project Setup from Template
 - Customization (Branding, Styling)
-- **Exercise**: Build SIEHS Chat Widget
+- **[Tutorial: ChatKit Widget Deployment](./tutorials/chatkit-widget)** - Connect Agent to Chat UI
 
 ### Module 4: Vercel Deployment
 - GitHub Basics
 - Vercel Account Setup
 - Environment Variables Configuration
 - Deployment Process
-- **Project**: Deploy Live Chatbot
+- **Covered in ChatKit Tutorial** - Full deployment walkthrough
 
 ### Module 5: Spec-Driven Development
 - Why Specifications Matter for AI
@@ -73,10 +73,18 @@ By the end of Day 3, you will be able to:
 
 ---
 
-## Hands-On Tutorial
+## Hands-On Tutorials
 
 | Tutorial | Description | Duration |
 |----------|-------------|----------|
-| [**AI Auto Email Responder**](./tutorials/auto-email-responder) | Build n8n workflow with Gmail + OpenAI for intelligent auto-replies | 90 min |
+| [**AI Auto Email Responder**](./tutorials/auto-email-responder) | Build n8n workflow with Gmail + AI Agent for intelligent auto-replies | 90 min |
+| [**Weather Agent with AgentKit**](./tutorials/agentkit-weather-agent) | Create AI Agent in OpenAI Agent Builder with tools | 45 min |
+| [**ChatKit Widget Deployment**](./tutorials/chatkit-widget) | Connect Agent to ChatKit UI and deploy to Vercel | 60 min |
 
-Start with the AI Auto Email Responder tutorial to combine your Day 2 n8n skills with OpenAI integration!
+### Recommended Path
+
+```
+Day 2 Skills → Auto Email Responder → AgentKit → ChatKit → Live Deployment!
+```
+
+Start with the AI Auto Email Responder tutorial if you want to combine Day 2 n8n skills, or jump directly to AgentKit if you prefer the no-code Agent Builder approach!
