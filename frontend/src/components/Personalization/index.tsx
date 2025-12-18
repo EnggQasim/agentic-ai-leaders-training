@@ -286,7 +286,13 @@ export function OnboardingModal(): JSX.Element | null {
     'Computer Vision', 'Motion Planning', 'Reinforcement Learning'
   ];
 
-  if (!isAuthenticated || !showOnboarding || isLoading) {
+  // Don't show on landing page - only show on docs pages
+  const isLandingPage = typeof window !== 'undefined' &&
+    (window.location.pathname === '/' ||
+     window.location.pathname === '/agentic-ai-leaders-training/' ||
+     window.location.pathname === '/agentic-ai-leaders-training');
+
+  if (!isAuthenticated || !showOnboarding || isLoading || isLandingPage) {
     return null;
   }
 

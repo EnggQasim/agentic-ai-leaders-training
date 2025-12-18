@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './styles.module.css';
 
 interface FormData {
@@ -8,6 +9,7 @@ interface FormData {
   department: string;
   email: string;
   linkedinProfile: string;
+  photoUrl: string;
 
   // Program Info
   programName: string;
@@ -47,6 +49,7 @@ const initialFormData: FormData = {
   department: '',
   email: '',
   linkedinProfile: '',
+  photoUrl: '',
   programName: 'Agentic AI Leaders Training',
   venue: 'SIEHS – HO – Board Room',
   trainer: 'Muhammad Qasim',
@@ -230,10 +233,12 @@ Other comments: ${data.otherComments || 'N/A'}
     );
   }
 
+  const logoUrl = useBaseUrl('/img/logo.svg');
+
   return (
     <form className={styles.evaluationForm} onSubmit={handleSubmit}>
       <div className={styles.formHeader}>
-        <img src="/img/logo.svg" alt="SIEHS Logo" className={styles.logo} />
+        <img src={logoUrl} alt="SIEHS Logo" className={styles.logo} />
         <h1>Training Evaluation Form</h1>
         <p className={styles.subtitle}>SIEHS-P&C-F-25 | Issue 03</p>
       </div>
@@ -307,6 +312,22 @@ Other comments: ${data.otherComments || 'N/A'}
             />
             <small className={styles.helpText}>
               Share your LinkedIn profile to connect with fellow participants
+            </small>
+          </div>
+          <div className={styles.formGroup + ' ' + styles.fullWidth}>
+            <label htmlFor="photoUrl">
+              Profile Photo URL (Optional)
+            </label>
+            <input
+              type="url"
+              id="photoUrl"
+              name="photoUrl"
+              value={formData.photoUrl}
+              onChange={handleInputChange}
+              placeholder="https://drive.google.com/... or any image URL"
+            />
+            <small className={styles.helpText}>
+              Upload your photo to Google Drive (make it public) or use any image hosting service and paste the link here. Your photo will appear in testimonials.
             </small>
           </div>
         </div>
