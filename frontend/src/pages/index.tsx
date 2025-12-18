@@ -9,6 +9,7 @@ import Heading from '@theme/Heading';
 import * as THREE from 'three';
 
 import styles from './index.module.css';
+import Testimonials from '@site/src/components/Testimonials';
 
 // Participant data
 const participants = [
@@ -359,6 +360,7 @@ export default function Home(): ReactNode {
       <main>
         <SIEHSContext />
         <TrainingDays />
+        <Testimonials />
         <Participants />
       </main>
     </Layout>
