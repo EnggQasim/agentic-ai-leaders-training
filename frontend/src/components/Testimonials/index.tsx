@@ -110,26 +110,13 @@ export default function Testimonials(): JSX.Element {
     // Fetch testimonials from Google Sheets via published CSV
     const fetchTestimonials = async () => {
       try {
-        // Google Sheets published CSV URL (requires sheet to be published to web)
-        // File → Share → Publish to web → Select 'feedback' sheet → Publish as CSV
-        const sheetId = '1zppcLNd-ClDtz63E2hlAwhSPobOMaiXFEXF4eiJIDRs';
-        const gid = '0'; // Sheet GID for feedback tab (check URL when viewing sheet)
-        const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
+        // Published Google Sheet CSV URL (feedback sheet - gid=877343173)
+        const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTOkvdjC4EEqMu6BWD8ix5V6nogV0n9_my87xyKoj392jHf20XYE5zG4jtRmgjSA4Crh5xYbmwZcUB_/pub?gid=877343173&single=true&output=csv';
 
         const response = await fetch(csvUrl);
 
         if (!response.ok) {
-          // If fetch fails, try alternative URL format
-          const altUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=feedback`;
-          const altResponse = await fetch(altUrl);
-
-          if (!altResponse.ok) {
-            throw new Error('Failed to fetch testimonials');
-          }
-
-          const csvText = await altResponse.text();
-          processCSV(csvText);
-          return;
+          throw new Error('Failed to fetch testimonials');
         }
 
         const csvText = await response.text();
